@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Trouvez où manger sainement en voyage : magasins proches, noms des produits dans la langue locale, idées de repas selon l'équipement de la chambre.">
+<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Assiette Nomade</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: une colonne éditoriale, sections séparées par des filets, cartes seulement pour les repas */
+:root{
+  --bg:#F2F5F1; --surface:#FFFFFF; --ink:#16261E; --muted:#55645B; --line:#D3DCD4;
+  --accent:#0B6B57; --accent-ink:#FFFFFF; --warm:#9A5B00; --warm-bg:#FBEBCF; --alert:#8A2B1E; --alert-bg:#FBE3DF;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A15; --surface:#16251E; --ink:#E7F0EA; --muted:#9DB0A5; --line:#2A3D33;
+    --accent:#4FC3A1; --accent-ink:#06231B; --warm:#F0B558; --warm-bg:#3A2D12; --alert:#F4A79B; --alert-bg:#3F1D18; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A15; --surface:#16251E; --ink:#E7F0EA; --muted:#9DB0A5; --line:#2A3D33;
+  --accent:#4FC3A1; --accent-ink:#06231B; --warm:#F0B558; --warm-bg:#3A2D12; --alert:#F4A79B; --alert-bg:#3F1D18; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px}
+.wrap{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.5rem;font-weight:800;letter-spacing:-.01em}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0}
+.lead{color:var(--muted);max-width:60ch;margin-top:12px;font-size:1.05rem}
+section{display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--line);padding-top:24px}
+.sub{color:var(--muted);max-width:62ch}
+.label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px;flex:1 1 200px;min-width:0}
+select,input[type=text],textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:84px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;font-size:.92rem}
+.chip[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.avoid[aria-pressed=true]{background:var(--alert);color:var(--bg);border-color:var(--alert)}
+.chip.preset{border-style:dashed}
+.group{display:flex;flex-direction:column;gap:8px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:10px 16px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn:disabled{opacity:.6;cursor:default}
+a{color:var(--accent)}
+.stores{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.store{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0}
+.store p{color:var(--muted);font-size:.92rem}
+.store a{font-weight:600;font-size:.92rem;margin-top:auto}
+.swaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 24px;margin:0;padding:0;list-style:none}
+.swaps li{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.swaps s{color:var(--muted)}
+.swaps b{color:var(--accent)}
+.phrases{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 24px;margin:0;padding:0;list-style:none}
+.phrases li{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column}
+.phrases strong{font-size:1.02rem}
+.phrases span{color:var(--muted);font-size:.88rem}
+.meals{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.meal{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);min-width:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.75rem;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--bg);color:var(--muted)}
+.tag.warm{background:var(--warm-bg);color:var(--warm)}
+.tag.alert{background:var(--alert-bg);color:var(--alert)}
+.buy{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px;font-size:.92rem}
+.buy small{color:var(--muted);font-size:.85rem}
+.buy .loc{font-weight:600}
+.meal .how{font-size:.92rem;color:var(--muted)}
+.meal .contains{font-size:.82rem;color:var(--muted)}
+.meal .btn{margin-top:auto;align-self:flex-start;padding:7px 12px;font-size:.9rem}
+.empty{padding:18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+.warn{padding:12px 14px;border-radius:8px;background:var(--alert-bg);color:var(--alert);font-size:.92rem}
+.list{margin:0;padding:0;list-style:none}
+.list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.list button{background:none;border:0;color:var(--muted);padding:0 4px;flex:none}
+.list .loc{font-weight:600}
+.list small{color:var(--muted);display:block}
+.aisle{margin-top:18px}
+.storehead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--accent);padding-bottom:6px}
+.storehead a{font-size:.9rem;font-weight:600}
+.list .act{display:flex;gap:8px;align-items:center;flex:none}
+select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
+.answer{white-space:pre-wrap;padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.note{font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Assiette Nomade</h1>
+    <p class="lead">Où manger sainement quand on voyage, quoi acheter au supermarché du coin (avec les noms dans la langue locale), et quoi préparer quand la chambre d'hôtel n'a ni micro-ondes ni frigo.</p>
+  </header>
+
+  <section aria-labelledby="h-where">
+    <h2 id="h-where">Où êtes-vous ?</h2>
+    <div class="row">
+      <div class="field"><label class="label" for="country">Pays</label>
+        <select id="country"></select></div>
+      <div class="field"><label class="label" for="city">Ville ou quartier (facultatif)</label>
+        <input type="text" id="city" placeholder="ex. Copenhague, Vesterbro" autocomplete="off"></div>
+    </div>
+    <p class="sub">Les enseignes sont les chaînes courantes du pays. Chaque lien ouvre Google Maps sur les adresses les plus proches, autour de la ville indiquée ou autour de vous.</p>
+    <h3>Supermarchés et magasins</h3>
+    <div class="stores" id="stores"></div>
+  </section>
+
+  <section aria-labelledby="h-out">
+    <h2 id="h-out">Manger dehors</h2>
+    <p class="sub">Une recherche par type de plat, pour trouver ce qui est proche et léger.</p>
+    <div class="row" id="outq"></div>
+    <h3>Au restaurant, quelques échanges simples</h3>
+    <ul class="swaps" id="swaps"></ul>
+    <div id="phrasebox"></div>
+  </section>
+
+  <section aria-labelledby="h-c">
+    <h2 id="h-c">Votre profil</h2>
+    <div class="group"><span class="label">Raccourcis selon votre hébergement</span>
+      <div class="row" id="c-presets"></div></div>
+    <div class="group"><span class="label">Il n'y a pas de</span>
+      <div class="row" id="c-equip"></div></div>
+    <div class="group"><span class="label">Régime</span>
+      <div class="row" id="c-diet"></div></div>
+    <div class="group"><span class="label">Allergies et intolérances : à éviter absolument</span>
+      <div class="row" id="c-avoid"></div>
+      <div class="warn" id="avoidwarn" hidden>Ces repères sont indicatifs et peuvent être faux pour un produit précis. Avec une vraie allergie, lisez toujours l'étiquette et demandez en magasin ou au restaurant. L'avoine, par exemple, peut contenir des traces de gluten.</div></div>
+    <div class="group"><span class="label">Envies</span>
+      <div class="row" id="c-want"></div></div>
+    <div class="group"><span class="label">Moment</span>
+      <div class="row" id="c-type"></div></div>
+  </section>
+
+  <section aria-labelledby="h-m">
+    <h2 id="h-m">Idées de repas</h2>
+    <p class="sub" id="count" aria-live="polite"></p>
+    <div class="meals" id="meals"></div>
+  </section>
+
+  <section aria-labelledby="h-l">
+    <h2 id="h-l">Liste de courses</h2>
+    <p class="sub">Chaque produit est associé à l'enseigne du pays où il est le plus facile à trouver. Vous pouvez la changer si elle n'existe pas près de vous. Le nom local est à montrer en magasin.</p>
+    <div id="listbox"></div>
+  </section>
+
+  <section id="ask" aria-labelledby="h-a" hidden>
+    <h2 id="h-a">Une idée sur mesure</h2>
+    <p class="sub">Décrivez la situation et Claude propose trois idées qui tiennent compte de votre profil et des enseignes du pays.</p>
+    <div class="field"><label class="label" for="free">Votre situation</label>
+      <textarea id="free" placeholder="ex. Nuit d'hôtel à Aarhus, arrivée à 21 h, magasin ouvert jusqu'à 22 h, pas de cuisine, je veux quelque chose de rassasiant."></textarea></div>
+    <div class="row"><button class="btn" id="askbtn" type="button">Proposer des idées</button></div>
+    <div class="answer" id="answer" hidden></div>
+  </section>
+
+  <p class="note">Les idées de repas sont des suggestions générales, pas un avis diététique ni médical.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* Langues: index dans les fiches ingrédient. 1=fr 2=en 3=da 4=de 5=es 6=it */
+var COUNTRIES={
+  fr:{label:"France",li:1,stores:[
+    ["Auchan","Salades du rayon frais, légumineuses en boîte, fruits en barquette."],
+    ["Carrefour City","Petits formats en centre-ville, houmous, œufs durs, yaourts."],
+    ["Lidl","Prix bas, noix et fruits secs, skyr, légumes prêts à manger."],
+    ["Monoprix","Rayon healthy, salades composées, jus pressés."],
+    ["Biocoop","Vrac, flocons d'avoine, oléagineux, barres sans sucre ajouté."]]},
+  dk:{label:"Danemark",li:3,stores:[
+    ["Netto","Petits prix, skyr, fruits, pain de seigle."],
+    ["Føtex","Grand choix, salades et plats frais à emporter."],
+    ["Rema 1000","Légumes, produits laitiers, snacks riches en protéines."],
+    ["Lidl","Noix, flocons d'avoine, conserves de poisson."],
+    ["Irma","Plats frais prêts à manger, produits bio."]]},
+  de:{label:"Allemagne",li:4,stores:[
+    ["Lidl","Fruits secs, skyr, conserves, légumes à croquer."],
+    ["Aldi","Petits prix, noix, flocons, légumineuses en boîte."],
+    ["REWE","Salades fraîches, comptoir de plats préparés."],
+    ["dm","Snacks secs, barres, flocons, fruits séchés."],
+    ["Denn's Biomarkt","Produits bio, houmous, vrac."]]},
+  es:{label:"Espagne",li:5,stores:[
+    ["Mercadona","Salades, légumineuses cuites, fruits, conserves de poisson."],
+    ["Carrefour","Rayon frais, houmous, œufs durs."],
+    ["Lidl","Noix, yaourts grecs, fruits secs."],
+    ["Dia","Petits prix, conserves, pain complet."]]},
+  it:{label:"Italie",li:6,stores:[
+    ["Conad","Légumes, légumineuses, fromages frais."],
+    ["Coop","Salades prêtes, fruits, yaourts."],
+    ["Esselunga","Comptoir traiteur, salades composées."],
+    ["Lidl","Noix, fruits secs, conserves."]]},
+  uk:{label:"Royaume-Uni",li:2,stores:[
+    ["Tesco","Rayon repas à emporter, fruits, houmous."],
+    ["Sainsbury's","Salades, wraps, fruits coupés."],
+    ["M&S Food","Plats frais prêts à manger, snacks de qualité."],
+    ["Lidl","Prix bas, noix, skyr."]]},
+  us:{label:"États-Unis",li:2,stores:[
+    ["Trader Joe's","Snacks de noix, salades, houmous en petits formats."],
+    ["Whole Foods","Bar à salades, plats chauds, produits bio."],
+    ["Walmart","Fruits, conserves, yaourts grecs."],
+    ["Kroger","Salades, fruits, comptoir traiteur."]]},
+  xx:{label:"Autre pays (en anglais)",li:2,stores:[
+    ["Lidl","Présent dans une grande partie de l'Europe."],
+    ["Aldi","Présent en Europe, aux États-Unis et en Australie."],
+    ["Carrefour","Présent dans de nombreux pays."],
+    ["Supermarché local","Cherchez les rayons fruits, conserves et produits frais."]]}
+};
+/* Ingrédients: [rayon, fr, en, da, de, es, it] */
+var ING={
+ skyr:["Frais","skyr ou yaourt grec","skyr or Greek yogurt","skyr eller græsk yoghurt","Skyr oder griechischer Joghurt","skyr o yogur griego","skyr o yogurt greco"],
+ berries:["Fruits et légumes","fruits rouges","berries","bær","Beeren","frutos rojos","frutti di bosco"],
+ walnuts:["Épicerie","noix","walnuts","valnødder","Walnüsse","nueces","noci"],
+ oats:["Épicerie","flocons d'avoine","rolled oats","havregryn","Haferflocken","copos de avena","fiocchi d'avena"],
+ plantmilk:["Épicerie","boisson végétale","plant-based milk","plantedrik","Pflanzendrink","bebida vegetal","bevanda vegetale"],
+ banana:["Fruits et légumes","banane","banana","banan","Banane","plátano","banana"],
+ cinnamon:["Épicerie","cannelle","cinnamon","kanel","Zimt","canela","cannella"],
+ ricecakes:["Épicerie","galettes de riz","rice cakes","riskiks","Reiswaffeln","tortitas de arroz","gallette di riso"],
+ pbutter:["Épicerie","beurre de cacahuète","peanut butter","jordnøddesmør","Erdnussbutter","mantequilla de cacahuete","burro di arachidi"],
+ chickpeas:["Conserves","pois chiches en boîte","canned chickpeas","kikærter på dåse","Kichererbsen (Dose)","garbanzos cocidos","ceci in scatola"],
+ cherrytom:["Fruits et légumes","tomates cerises","cherry tomatoes","cherrytomater","Cherrytomaten","tomates cherry","pomodorini"],
+ cucumber:["Fruits et légumes","concombre","cucumber","agurk","Gurke","pepino","cetriolo"],
+ lemon:["Fruits et légumes","citron","lemon","citron","Zitrone","limón","limone"],
+ oliveoil:["Épicerie","huile d'olive (petit flacon)","olive oil (small bottle)","olivenolie (lille flaske)","Olivenöl (kleine Flasche)","aceite de oliva (botella pequeña)","olio d'oliva (bottiglia piccola)"],
+ tortillas:["Pain","tortillas complètes","wholemeal tortillas","fuldkornswraps","Vollkorn-Wraps","tortillas integrales","piadine integrali"],
+ tuna:["Conserves","thon en boîte","canned tuna","tun på dåse","Thunfisch (Dose)","atún en lata","tonno in scatola"],
+ avocado:["Fruits et légumes","avocat","avocado","avocado","Avocado","aguacate","avocado"],
+ rocket:["Fruits et légumes","roquette","rocket (arugula)","rucola","Rucola","rúcula","rucola"],
+ hummus:["Frais","houmous (petit pot)","hummus (small tub)","hummus (lille bæger)","Hummus (kleine Packung)","hummus (tarrina pequeña)","hummus (vaschetta piccola)"],
+ carrots:["Fruits et légumes","carottes","carrots","gulerødder","Karotten","zanahorias","carote"],
+ wholebread:["Pain","pain complet","wholemeal bread","fuldkornsbrød","Vollkornbrot","pan integral","pane integrale"],
+ gazpacho:["Frais","gaspacho en brique","gazpacho (carton)","gazpacho","Gazpacho","gazpacho","gazpacho"],
+ couscous:["Épicerie","semoule complète","wholemeal couscous","fuldkornscouscous","Vollkorn-Couscous","cuscús integral","cous cous integrale"],
+ pepper:["Fruits et légumes","poivron","bell pepper","peberfrugt","Paprika","pimiento","peperone"],
+ cumin:["Épicerie","cumin","cumin","spidskommen","Kreuzkümmel","comino","cumino"],
+ eggs:["Frais","œufs durs","hard-boiled eggs","hårdkogte æg","hartgekochte Eier","huevos cocidos","uova sode"],
+ lambs:["Fruits et légumes","mâche","lamb's lettuce","feldsalat","Feldsalat","canónigos","valerianella"],
+ rice:["Épicerie","riz en sachet micro-ondable","microwave rice pouch","mikroovn-ris (færdigkogt)","Express-Reis (Mikrowelle)","arroz para microondas","riso pronto da microonde"],
+ salmon:["Frais","saumon fumé","smoked salmon","røget laks","Räucherlachs","salmón ahumado","salmone affumicato"],
+ edamame:["Frais","edamame","edamame","edamamebønner","Edamame","edamame","edamame"],
+ lentils:["Conserves","lentilles cuites","cooked lentils","kogte linser","gekochte Linsen","lentejas cocidas","lenticchie cotte"],
+ redonion:["Fruits et légumes","oignon rouge","red onion","rødløg","rote Zwiebel","cebolla morada","cipolla rossa"],
+ vinegar:["Épicerie","vinaigre","vinegar","eddike","Essig","vinagre","aceto"],
+ sardines:["Conserves","sardines à l'huile d'olive","sardines in olive oil","sardiner i olivenolie","Sardinen in Olivenöl","sardinas en aceite de oliva","sardine sott'olio"],
+ saladmix:["Frais","salade composée prête à manger","ready-made salad","færdigsalat","fertiger Salat","ensalada preparada","insalata pronta"],
+ proteinadd:["Frais","œuf dur ou poulet en tranches","egg or sliced chicken","æg eller kyllingepålæg","Ei oder Hähnchenaufschnitt","huevo o pollo en lonchas","uovo o petto di pollo a fette"],
+ fruit:["Fruits et légumes","fruit frais","fresh fruit","frugt","Obst","fruta","frutta"],
+ almonds:["Épicerie","amandes","almonds","mandler","Mandeln","almendras","mandorle"],
+ apricots:["Épicerie","abricots secs","dried apricots","tørrede abrikoser","getrocknete Aprikosen","orejones","albicocche secche"],
+ apple:["Fruits et légumes","pomme","apple","æble","Apfel","manzana","mela"],
+ fromageblanc:["Frais","fromage blanc","quark or fromage frais","kvark","Quark","queso fresco batido","quark o formaggio fresco"],
+ honey:["Épicerie","miel","honey","honning","Honig","miel","miele"],
+ hazelnuts:["Épicerie","noisettes","hazelnuts","hasselnødder","Haselnüsse","avellanas","nocciole"],
+ hardcheese:["Frais","fromage à pâte dure","hard cheese","hård ost","Hartkäse","queso curado","formaggio stagionato"]
+};
+var AISLES=["Fruits et légumes","Frais","Pain","Épicerie","Conserves"];
+/* Enseigne suggérée par pays: [courses de base, produits frais] */
+var ROLE={fr:["Lidl","Carrefour City"],dk:["Netto","Føtex"],de:["Lidl","REWE"],es:["Mercadona","Mercadona"],it:["Lidl","Coop"],uk:["Lidl","Tesco"],us:["Trader Joe's","Whole Foods"],xx:["Lidl","Supermarché local"]};
+/* Phrases à dire: [fr, en, da, de, es, it] (index = langue-1) */
+var PHRASES={
+ 2:["No sauce, please","Can I have the dressing on the side?","Does this contain gluten?","Does this contain nuts?","I'm vegetarian","Do you have vegetarian dishes?","I'm allergic to …"],
+ 3:["Uden sauce, tak","Kan jeg få dressingen ved siden af?","Er der gluten i det her?","Er der nødder i?","Jeg er vegetar","Har I vegetarretter?","Jeg er allergisk over for …"],
+ 4:["Ohne Soße, bitte","Kann ich das Dressing extra haben?","Ist da Gluten drin?","Sind Nüsse darin?","Ich bin Vegetarier(in)","Haben Sie vegetarische Gerichte?","Ich bin allergisch gegen …"],
+ 5:["Sin salsa, por favor","¿Me pone el aliño aparte?","¿Lleva gluten?","¿Lleva frutos secos?","Soy vegetariano/a","¿Tienen platos vegetarianos?","Soy alérgico/a a …"],
+ 6:["Senza salsa, per favore","Posso avere il condimento a parte?","Contiene glutine?","Contiene frutta a guscio?","Sono vegetariano/a","Avete piatti vegetariani?","Sono allergico/a a …"]
+};
+var FRP=["Sans sauce, s'il vous plaît","Le assaisonnement à part ?","Est-ce qu'il y a du gluten ?","Y a-t-il des fruits à coque ?","Je suis végétarien(ne)","Avez-vous des plats végétariens ?","Je suis allergique à …"];
+FRP[1]="L'assaisonnement à part ?";
+var OUT=[["Salades","healthy salad"],["Bols poke","poke bowl"],["Végétarien","vegetarian restaurant"],["Soupes","soup"],["Poisson grillé","grilled fish"],["Petit-déjeuner","healthy breakfast"],["Jus frais","fresh juice"]];
+var SWAPS=[["Frites","légumes vapeur ou salade"],["Sauce sur le plat","sauce à part"],["Frit ou pané","grillé, rôti ou vapeur"],["Soda","eau pétillante ou thé"],["Grosse portion de pâtes","demi-portion et double légumes"],["Viennoiserie à l'hôtel","œufs, yaourt et fruits"]];
+var EQUIP=[["fridge","Frigo"],["micro","Micro-ondes"],["kettle","Bouilloire"],["cutlery","Couverts"]];
+var PRESETS=[
+ ["Hôtel basique",["fridge","micro","kettle"]],
+ ["Chambre avec bouilloire",["fridge","micro"]],
+ ["Train ou aéroport",["fridge","micro","kettle","cutlery"]],
+ ["Appartement avec cuisine",[]]
+];
+var AVOID=[["nuts","Fruits à coque"],["peanut","Arachide"],["gluten","Gluten"],["dairy","Lait et lactose"],["egg","Œuf"],["fish","Poisson"],["sesame","Sésame"],["soy","Soja"]];
+var AVN={nuts:"fruits à coque",peanut:"arachide",gluten:"gluten",dairy:"lait",egg:"œuf",fish:"poisson",sesame:"sésame",soy:"soja"};
+var TYPES=[["all","Tous"],["b","Petit-déjeuner"],["m","Repas"],["s","Snack"]];
+var EQN={fridge:"frigo",micro:"micro-ondes",kettle:"bouilloire",cutlery:"couverts"};
+var TYPN={b:"Petit-déjeuner",m:"Repas",s:"Snack"};
+/* v: végétarien, vg: végan, a: allergènes présents */
+var MEALS=[
+ {n:"Skyr, fruits rouges et noix",t:"b",need:["fridge","cutlery"],v:1,vg:0,a:["dairy","nuts"],p:1,c:0,buy:["skyr","berries","walnuts"],how:"Mélangez dans le pot et ajoutez les noix au dernier moment pour qu'elles restent croquantes."},
+ {n:"Overnight oats",t:"b",need:["fridge","cutlery"],v:1,vg:1,a:["gluten"],p:0,c:1,buy:["oats","plantmilk","banana"],how:"Flocons et boisson dans un pot fermé, au frais pour la nuit. Prêt au réveil."},
+ {n:"Porridge à l'eau chaude",t:"b",need:["kettle","cutlery"],v:1,vg:1,a:["gluten","nuts"],p:0,c:1,buy:["oats","banana","cinnamon","walnuts"],how:"Versez l'eau de la bouilloire sur les flocons, couvrez 3 minutes, ajoutez la banane."},
+ {n:"Yaourt, flocons, banane et miel",t:"b",need:["fridge","cutlery"],v:1,vg:0,a:["dairy","gluten"],p:1,c:1,buy:["skyr","oats","banana","honey"],how:"Mélangez les flocons au yaourt, ajoutez la banane en rondelles et un filet de miel."},
+ {n:"Banane, beurre de cacahuète, galettes de riz",t:"b",need:[],v:1,vg:1,a:["peanut"],p:1,c:1,buy:["ricecakes","pbutter","banana"],how:"Tartinez les galettes, écrasez la banane dessus. Rien à chauffer."},
+ {n:"Salade de pois chiches et tomates",t:"m",need:["cutlery"],v:1,vg:1,a:[],p:1,c:1,buy:["chickpeas","cherrytom","cucumber","lemon","oliveoil"],how:"Égouttez les pois chiches, mélangez avec les légumes, citron et huile."},
+ {n:"Salade de thon, pois chiches et concombre",t:"m",need:["cutlery"],v:0,vg:0,a:["fish"],p:1,c:1,buy:["tuna","chickpeas","cucumber","lemon","oliveoil"],how:"Mélangez le thon égoutté, les pois chiches et le concombre en dés. Citron et huile."},
+ {n:"Wrap thon, avocat et roquette",t:"m",need:[],v:0,vg:0,a:["gluten","fish"],p:1,c:1,buy:["tortillas","tuna","avocado","rocket"],how:"Étalez l'avocat, ajoutez le thon et la roquette, roulez."},
+ {n:"Houmous, crudités et pain complet",t:"m",need:[],v:1,vg:1,a:["gluten","sesame"],p:1,c:1,buy:["hummus","carrots","cucumber","wholebread"],how:"Prenez un petit pot, à finir dans la journée, pour éviter la conservation."},
+ {n:"Tartines houmous et avocat",t:"m",need:[],v:1,vg:1,a:["gluten","sesame"],p:1,c:0,buy:["wholebread","hummus","avocado","cherrytom"],how:"Tartinez le houmous sur le pain, ajoutez l'avocat écrasé et les tomates coupées."},
+ {n:"Gaspacho et pain complet",t:"m",need:[],v:1,vg:1,a:["gluten","nuts"],p:0,c:1,buy:["gazpacho","wholebread","walnuts"],how:"Se boit froid directement dans la brique. Les noix ajoutent des protéines."},
+ {n:"Couscous complet, pois chiches et poivron",t:"m",need:["kettle","cutlery"],v:1,vg:1,a:["gluten"],p:1,c:1,buy:["couscous","chickpeas","pepper","cumin","oliveoil"],how:"Eau bouillante sur la semoule, couvrez 5 minutes, mélangez aux pois chiches égouttés."},
+ {n:"Œufs durs, avocat et mâche",t:"m",need:["fridge","cutlery"],v:1,vg:0,a:["egg"],p:1,c:0,buy:["eggs","avocado","lambs","lemon"],how:"Tranchez les œufs et l'avocat sur la mâche, pressez le citron."},
+ {n:"Bol de riz, saumon fumé et edamame",t:"m",need:["fridge","micro","cutlery"],v:0,vg:0,a:["fish","soy"],p:1,c:0,buy:["rice","salmon","edamame","avocado"],how:"Chauffez le riz 2 minutes, ajoutez le reste froid."},
+ {n:"Lentilles chaudes aux légumes",t:"m",need:["micro","cutlery"],v:1,vg:1,a:[],p:1,c:1,buy:["lentils","carrots","redonion","vinegar"],how:"Réchauffez les lentilles, ajoutez les légumes crus et le vinaigre."},
+ {n:"Sardines sur pain complet",t:"m",need:[],v:0,vg:0,a:["fish","gluten"],p:1,c:1,buy:["sardines","wholebread","lemon"],how:"Écrasez les sardines sur le pain, pressez le citron."},
+ {n:"Salade du rayon frais et protéine",t:"m",need:["fridge","cutlery"],v:0,vg:0,a:["egg"],chk:1,p:1,c:0,buy:["saladmix","proteinadd","fruit"],how:"Choisissez une salade sans sauce crémeuse et ajoutez une source de protéines."},
+ {n:"Noix, fruits secs et un fruit frais",t:"s",need:[],v:1,vg:1,a:["nuts"],p:0,c:1,buy:["walnuts","almonds","apricots","apple"],how:"Un petit sachet qui se glisse dans le sac pour le train ou l'avion."},
+ {n:"Fromage blanc, miel et noisettes",t:"s",need:["fridge","cutlery"],v:1,vg:0,a:["dairy","nuts"],p:1,c:0,buy:["fromageblanc","honey","hazelnuts"],how:"Un pot individuel suffit."},
+ {n:"Crudités et houmous",t:"s",need:[],v:1,vg:1,a:["sesame"],p:1,c:1,buy:["carrots","cucumber","hummus"],how:"Bâtonnets à croquer, pas besoin de couverts si vous trempez."},
+ {n:"Œuf dur et fruit",t:"s",need:["fridge"],v:1,vg:0,a:["egg"],p:1,c:1,buy:["eggs","fruit"],how:"Œufs durs vendus pelés au rayon frais."},
+ {n:"Pomme et fromage à pâte dure",t:"s",need:[],v:1,vg:0,a:["dairy"],p:1,c:1,buy:["apple","hardcheese"],how:"Un fromage à pâte dure supporte quelques heures hors du frais."},
+ {n:"Pomme et beurre de cacahuète",t:"s",need:["cutlery"],v:1,vg:1,a:["peanut"],p:1,c:1,buy:["apple","pbutter"],how:"Une pomme à croquer avec du beurre de cacahuète en pot individuel si possible."}
+];
+var S={country:"fr",city:"",excl:[],avoid:[],veg:false,vegan:false,prot:false,cheap:false,type:"all",list:[],assign:{}};
+var KEY="assiette-nomade-v2";
+var $=function(id){return document.getElementById(id)};
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);for(var k in S){if(o[k]!==undefined)S[k]=o[k]}}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function has(a,v){return a.indexOf(v)>-1}
+function toggle(a,v){var i=a.indexOf(v);if(i>-1)a.splice(i,1);else a.push(v)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function cty(){return COUNTRIES[S.country]||COUNTRIES.xx}
+function loc(key){var li=cty().li;return li===1?"":ING[key][li]}
+function mapUrl(q){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q+(S.city?" "+S.city:" near me"))}
+function chip(label,on,fn,cls){var b=document.createElement("button");b.type="button";b.className="chip"+(cls?" "+cls:"");b.textContent=label;b.setAttribute("aria-pressed",on?"true":"false");b.addEventListener("click",function(){fn();save();renderAll()});return b}
+function fill(id,items){var el=$(id);el.textContent="";items.forEach(function(x){el.appendChild(x)})}
+function sameSet(a,b){return a.length===b.length&&a.every(function(x){return has(b,x)})}
+
+function renderWhere(){
+  $("stores").innerHTML=cty().stores.map(function(s){
+    return '<div class="store"><h3>'+esc(s[0])+'</h3><p>'+esc(s[1])+'</p><a href="'+mapUrl(s[0])+'" target="_blank" rel="noopener">Voir les plus proches</a></div>'
+  }).join("");
+  $("outq").innerHTML=OUT.map(function(o){
+    return '<a class="chip" style="text-decoration:none" href="'+mapUrl(o[1])+'" target="_blank" rel="noopener">'+esc(o[0])+'</a>'
+  }).join("");
+  $("swaps").innerHTML=SWAPS.map(function(s){return '<li><s>'+esc(s[0])+'</s><span>→</span><b>'+esc(s[1])+'</b></li>'}).join("");
+  var li=cty().li,ph=PHRASES[li];
+  if(!ph){$("phrasebox").innerHTML="";return}
+  $("phrasebox").innerHTML='<h3 style="margin-bottom:8px">À dire sur place</h3><ul class="phrases">'+ph.map(function(p,i){return '<li><strong>'+esc(p)+'</strong><span>'+esc(FRP[i])+'</span></li>'}).join("")+'</ul>';
+}
+function renderChips(){
+  fill("c-presets",PRESETS.map(function(p){return chip(p[0],sameSet(S.excl,p[1]),function(){S.excl=p[1].slice()},"preset")}));
+  fill("c-equip",EQUIP.map(function(e){return chip("Pas de "+e[1].toLowerCase(),has(S.excl,e[0]),function(){toggle(S.excl,e[0])})}));
+  fill("c-diet",[
+    chip("Végétarien",S.veg||S.vegan,function(){if(S.vegan){S.vegan=false;S.veg=false}else S.veg=!S.veg}),
+    chip("Végan",S.vegan,function(){S.vegan=!S.vegan;if(S.vegan)S.veg=true})]);
+  fill("c-avoid",AVOID.map(function(e){return chip(e[1],has(S.avoid,e[0]),function(){toggle(S.avoid,e[0])},"avoid")}));
+  $("avoidwarn").hidden=!S.avoid.length;
+  fill("c-want",[
+    chip("Riche en protéines",S.prot,function(){S.prot=!S.prot}),
+    chip("Petit budget",S.cheap,function(){S.cheap=!S.cheap})]);
+  fill("c-type",TYPES.map(function(e){return chip(e[1],S.type===e[0],function(){S.type=e[0]})}));
+}
+function matches(m){
+  if(S.type!=="all"&&m.t!==S.type)return false;
+  for(var i=0;i<m.need.length;i++)if(has(S.excl,m.need[i]))return false;
+  if(S.vegan&&!m.vg)return false;
+  if((S.veg||S.vegan)&&!m.v)return false;
+  for(var j=0;j<S.avoid.length;j++)if(has(m.a,S.avoid[j]))return false;
+  if(S.prot&&!m.p)return false;
+  if(S.cheap&&!m.c)return false;
+  return true;
+}
+function buyHtml(keys){
+  return '<ul class="buy">'+keys.map(function(k){
+    var l=loc(k);
+    return '<li>'+esc(ING[k][1])+(l?' <small>→</small> <span class="loc">'+esc(l)+'</span>':'')+'</li>'
+  }).join("")+'</ul>'
+}
+function renderMeals(){
+  var list=MEALS.filter(matches);
+  $("count").textContent=list.length===0?"":(list.length===1?"1 idée correspond à votre profil.":list.length+" idées correspondent à votre profil.");
+  if(!list.length){$("meals").innerHTML='<div class="empty">Aucune idée avec tout votre profil. Retirez une contrainte, ou demandez une idée sur mesure plus bas.</div>';return}
+  $("meals").innerHTML=list.map(function(m){
+    var idx=MEALS.indexOf(m);
+    var tags='<span class="tag">'+TYPN[m.t]+'</span>';
+    tags+=m.need.length?m.need.map(function(n){return '<span class="tag warm">'+EQN[n]+'</span>'}).join(""):'<span class="tag">aucun équipement</span>';
+    if(m.chk)tags+='<span class="tag alert">à vérifier sur l\'étiquette</span>';
+    var contains=m.a.length?'Contient : '+m.a.map(function(x){return AVN[x]}).join(", ")+'.':'Aucun des allergènes courants listés.';
+    return '<article class="meal"><div class="tags">'+tags+'</div><h3>'+esc(m.n)+'</h3>'+
+      buyHtml(m.buy)+'<p class="how">'+esc(m.how)+'</p><p class="contains">'+esc(contains)+'</p>'+
+      '<button type="button" class="btn ghost" data-add="'+idx+'">Ajouter à la liste</button></article>'
+  }).join("");
+}
+function storeNames(){return cty().stores.map(function(x){return x[0]})}
+function storeFor(k){
+  var st=storeNames(),a=S.assign[k];
+  if(a&&has(st,a))return a;
+  var r=ROLE[S.country]||ROLE.xx,d=ING[k][0]==="Frais"?r[1]:r[0];
+  return has(st,d)?d:st[0];
+}
+function grouped(){
+  var g={};
+  S.list.forEach(function(k){var n=storeFor(k);(g[n]=g[n]||[]).push(k)});
+  return storeNames().filter(function(n){return g[n]}).map(function(n){
+    g[n].sort(function(x,y){return AISLES.indexOf(ING[x][0])-AISLES.indexOf(ING[y][0])});
+    return [n,g[n]];
+  });
+}
+function listText(){
+  var out=[];
+  grouped().forEach(function(g){
+    out.push(g[0].toUpperCase());
+    g[1].forEach(function(k){var l=loc(k);out.push("- "+ING[k][1]+(l?" ("+l+")":""))});
+    out.push("");
+  });
+  return out.join("\n").trim();
+}
+function itemRow(k){
+  var l=loc(k),cur=storeFor(k);
+  var opts=storeNames().map(function(n){return '<option'+(n===cur?' selected':'')+'>'+esc(n)+'</option>'}).join("");
+  var name=l?'<span class="loc">'+esc(l)+'</span><small>'+esc(ING[k][1])+' · '+esc(ING[k][0])+'</small>':esc(ING[k][1])+'<small>'+esc(ING[k][0])+'</small>';
+  return '<li><span>'+name+'</span><span class="act"><select class="mini" data-asg="'+k+'" aria-label="Magasin pour '+esc(ING[k][1])+'">'+opts+'</select><button type="button" aria-label="Retirer '+esc(ING[k][1])+'" data-rm="'+k+'">Retirer</button></span></li>';
+}
+function renderList(){
+  var box=$("listbox");
+  S.list=S.list.filter(function(k){return ING[k]});
+  if(!S.list.length){box.innerHTML='<div class="empty">Votre liste est vide. Ajoutez les ingrédients d\'un repas avec le bouton de sa carte.</div>';return}
+  var html="";
+  grouped().forEach(function(g){
+    html+='<div class="aisle"><div class="storehead"><h3>'+esc(g[0])+'</h3><a href="'+mapUrl(g[0])+'" target="_blank" rel="noopener">Voir le plus proche</a></div><ul class="list">'+g[1].map(itemRow).join("")+'</ul></div>';
+  });
+  html+='<div class="row" style="margin-top:16px"><button type="button" class="btn" id="copy">Copier la liste</button><button type="button" class="btn ghost" id="clear">Vider</button></div><div id="fb"></div>';
+  box.innerHTML=html;
+}
+function renderAll(){renderWhere();renderChips();renderMeals();renderList()}
+
+document.addEventListener("click",function(e){
+  var t=e.target;
+  if(!t||!t.dataset)return;
+  if(t.dataset.add!==undefined){
+    MEALS[+t.dataset.add].buy.forEach(function(k){if(!has(S.list,k))S.list.push(k)});
+    save();renderList();
+  }else if(t.dataset.rm!==undefined){toggle(S.list,t.dataset.rm);save();renderList()}
+  else if(t.id==="clear"){S.list=[];save();renderList()}
+  else if(t.id==="copy"){
+    var txt=listText();
+    var fallback=function(){$("fb").innerHTML='<textarea readonly id="fbt" style="margin-top:10px;min-height:140px">'+esc(txt)+'</textarea>';var ta=$("fbt");ta.focus();ta.select()};
+    try{navigator.clipboard.writeText(txt).then(function(){t.textContent="Copié"},fallback)}catch(err){fallback()}
+  }
+});
+document.addEventListener("change",function(e){
+  var t=e.target;
+  if(t&&t.dataset&&t.dataset.asg){S.assign[t.dataset.asg]=t.value;save();renderList()}
+});
+var cs=$("country");
+cs.innerHTML=Object.keys(COUNTRIES).map(function(k){return '<option value="'+k+'">'+COUNTRIES[k].label+'</option>'}).join("");
+cs.addEventListener("change",function(){S.country=cs.value;save();renderAll()});
+$("city").addEventListener("input",function(e){S.city=e.target.value.trim();save();renderWhere()});
+
+load();
+cs.value=COUNTRIES[S.country]?S.country:"fr";
+$("city").value=S.city||"";
+renderAll();
+
+/* Idée sur mesure avec Claude */
+(async function(){
+  var sample=null;
+  try{sample=await claude.use("sample")}catch(e){}
+  if(!sample)return;
+  $("ask").hidden=false;
+  var busy=false;
+  $("askbtn").addEventListener("click",async function(){
+    if(busy)return;
+    var free=$("free").value.trim();
+    var c=cty();
+    var diet=S.vegan?"végan":(S.veg?"végétarien":"aucun");
+    var lines=[
+      "Tu aides une personne qui voyage à manger sainement. Réponds en français, de façon concise.",
+      "Pays : "+c.label+(S.city?", ville : "+S.city:"")+".",
+      "Enseignes courantes : "+c.stores.map(function(s){return s[0]}).join(", ")+".",
+      "Absent de la chambre : "+(S.excl.length?S.excl.map(function(x){return EQN[x]}).join(", "):"rien de particulier")+".",
+      "Régime : "+diet+".",
+      "Allergies ou intolérances à éviter absolument : "+(S.avoid.length?S.avoid.map(function(x){return AVN[x]}).join(", "):"aucune")+".",
+      S.prot?"Priorité aux protéines.":"",S.cheap?"Petit budget.":"",
+      "Situation : "+(free||"non précisée")+".",
+      "Propose exactement trois idées de repas. Pour chacune : le nom, ce qu'il faut acheter avec le nom de chaque produit dans la langue du pays entre parenthèses, l'enseigne où le trouver, et comment l'assembler sans utiliser l'équipement absent. N'invente ni horaires ni prix. Rappelle en une phrase de vérifier les étiquettes s'il y a une allergie."
+    ].filter(Boolean).join("\n");
+    var out=$("answer");out.hidden=false;out.textContent="Réflexion en cours…";
+    busy=true;$("askbtn").disabled=true;
+    try{
+      await sample(lines,{cache:false,onText:function(r){out.textContent=r.text}});
+    }catch(err){
+      out.textContent=(err&&err.code==="rate_limited")?"Trop de demandes pour le moment. Réessayez dans un instant.":(err&&err.code==="not_granted")?"L'autorisation a été refusée. Les idées ci-dessus restent disponibles.":"La demande n'a pas abouti. Réessayez dans un instant.";
+    }
+    busy=false;$("askbtn").disabled=false;
+  });
+})();
+})();
+</script>
+
+</body>
+</html>
