@@ -7,6 +7,13 @@
 <style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Assiette Nomade</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B6B57">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nomade">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
 <style>
 /* Layout: une colonne éditoriale, sections séparées par des filets, cartes seulement pour les repas */
@@ -678,6 +685,8 @@ try{
     if(j&&Array.isArray(j.items)){PR.remote=j.items.filter(validPrice);renderList()}
   }).catch(function(){});
 }catch(e){}
+/* Fonctionnement hors ligne et installation sur l'écran d'accueil */
+try{if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(function(){})}catch(e){}
 
 /* Idée sur mesure avec Claude */
 (async function(){
