@@ -41,7 +41,7 @@ section{display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--l
 .label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .row{display:flex;flex-wrap:wrap;gap:12px}
 .field{display:flex;flex-direction:column;gap:6px;flex:1 1 200px;min-width:0}
-select,input[type=text],textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0}
+select,input[type=text],input[type=date],textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0}
 textarea{resize:vertical;min-height:84px}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 button{font:inherit;cursor:pointer}
@@ -92,6 +92,11 @@ a{color:var(--accent)}
 select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
 .answer{white-space:pre-wrap;padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .note{font-size:.85rem;color:var(--muted)}
+.list small.price{color:var(--accent);font-weight:500}
+.addprice{margin-top:20px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:12px 16px}
+.addprice summary{cursor:pointer;font-weight:600}
+.addprice .row{margin-top:12px}
+.addprice .field.narrow{flex:0 1 120px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -152,6 +157,28 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
     <h2 id="h-l">Liste de courses</h2>
     <p class="sub">Chaque produit est associé à l'enseigne du pays où il est le plus facile à trouver. Vous pouvez la changer si elle n'existe pas près de vous. Le nom local est à montrer en magasin.</p>
     <div id="listbox"></div>
+    <details class="addprice" id="addprice">
+      <summary>Ajouter un prix vu en magasin</summary>
+      <p class="sub" style="margin-top:10px">Notez le prix lu sur l'étiquette en rayon. Il est enregistré sur cet appareil, avec sa date, et s'affiche dans la liste. Aucun prix n'est estimé : sans saisie, la liste indique « prix non renseigné ».</p>
+      <div class="row">
+        <div class="field"><label class="label" for="ap-ing">Produit</label><select id="ap-ing"></select></div>
+        <div class="field"><label class="label" for="ap-store">Magasin</label><select id="ap-store"></select></div>
+      </div>
+      <div class="row">
+        <div class="field"><label class="label" for="ap-prod">Nom exact sur l'étiquette (facultatif)</label><input type="text" id="ap-prod" autocomplete="off"></div>
+        <div class="field"><label class="label" for="ap-ref">Référence ou code-barres (facultatif)</label><input type="text" id="ap-ref" inputmode="numeric" autocomplete="off"></div>
+      </div>
+      <div class="row">
+        <div class="field narrow"><label class="label" for="ap-price">Prix</label><input type="text" id="ap-price" inputmode="decimal" placeholder="12,50" autocomplete="off"></div>
+        <div class="field narrow"><label class="label" for="ap-cur">Devise</label><input type="text" id="ap-cur" maxlength="3" autocomplete="off"></div>
+        <div class="field narrow"><label class="label" for="ap-date">Date</label><input type="date" id="ap-date"></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="btn" id="ap-save">Enregistrer ce prix</button>
+        <button type="button" class="btn ghost" id="ap-copy">Copier le fichier prices.json</button>
+      </div>
+      <p class="note" id="ap-fb" aria-live="polite" style="margin-top:8px"></p>
+    </details>
   </section>
 
   <section id="ask" aria-labelledby="h-a" hidden>
@@ -209,6 +236,62 @@ var COUNTRIES={
     ["Whole Foods","Bar à salades, plats chauds, produits bio."],
     ["Walmart","Fruits, conserves, yaourts grecs."],
     ["Kroger","Salades, fruits, comptoir traiteur."]]},
+  be:{label:"Belgique (francophone)",li:1,stores:[
+    ["Delhaize","Rayon frais, plats préparés, fruits et légumes."],
+    ["Colruyt","Grandes surfaces, légumineuses en boîte, produits de base."],
+    ["Carrefour Market","Salades, houmous, œufs durs."],
+    ["Aldi","Noix, flocons d'avoine, conserves."],
+    ["Lidl","Skyr, fruits secs, légumes à croquer."]]},
+  bn:{label:"Belgique (néerlandophone)",li:7,stores:[
+    ["Delhaize","Rayon frais, plats préparés, fruits et légumes."],
+    ["Colruyt","Grandes surfaces, légumineuses en boîte, produits de base."],
+    ["Albert Heijn","Salades, plats frais, fruits coupés."],
+    ["Aldi","Noix, flocons d'avoine, conserves."],
+    ["Lidl","Skyr, fruits secs, légumes à croquer."]]},
+  lu:{label:"Luxembourg",li:1,stores:[
+    ["Cactus","Rayon frais, plats préparés, fruits et légumes."],
+    ["Delhaize","Salades, houmous, produits laitiers."],
+    ["Lidl","Noix, skyr, conserves."],
+    ["Aldi","Petits prix, flocons, légumineuses."]]},
+  nl:{label:"Pays-Bas",li:7,stores:[
+    ["Albert Heijn","Salades, plats frais, fruits coupés, houmous."],
+    ["Jumbo","Grand choix, rayon frais, légumineuses en boîte."],
+    ["Lidl","Skyr, noix, fruits secs."],
+    ["Aldi","Petits prix, flocons, conserves."],
+    ["Plus","Fruits et légumes, produits frais."]]},
+  ch:{label:"Suisse (alémanique)",li:4,stores:[
+    ["Migros","Rayon frais, salades, plats préparés."],
+    ["Coop","Grand choix, produits bio, plats frais."],
+    ["Denner","Petits prix, noix, flocons, conserves."],
+    ["Aldi Suisse","Petits prix, légumineuses en boîte."],
+    ["Lidl","Skyr, fruits secs, conserves."]]},
+  cr:{label:"Suisse (romande)",li:1,stores:[
+    ["Migros","Rayon frais, salades, plats préparés."],
+    ["Coop","Grand choix, produits bio, plats frais."],
+    ["Denner","Petits prix, noix, flocons, conserves."],
+    ["Aldi Suisse","Petits prix, légumineuses en boîte."],
+    ["Lidl","Skyr, fruits secs, conserves."]]},
+  at:{label:"Autriche",li:4,stores:[
+    ["Billa","Salades, plats frais, fruits et légumes."],
+    ["Spar","Rayon frais, plats préparés."],
+    ["Hofer","Petits prix, noix, flocons, conserves."],
+    ["Lidl","Skyr, fruits secs, conserves."]]},
+  pl:{label:"Pologne",li:8,stores:[
+    ["Biedronka","Petits prix, fruits, produits laitiers, conserves."],
+    ["Żabka","Petits magasins de proximité, snacks, salades."],
+    ["Lidl","Noix, fruits secs, skyr."],
+    ["Carrefour","Rayon frais, houmous, œufs durs."]]},
+  se:{label:"Suède",li:9,stores:[
+    ["ICA","Rayon frais, plats préparés, fruits et légumes."],
+    ["Willys","Petits prix, flocons, conserves, légumineuses."],
+    ["Coop","Salades, produits bio, plats frais."],
+    ["Hemköp","Rayon frais, boulangerie."],
+    ["Lidl","Noix, skyr, fruits secs."]]},
+  pt:{label:"Portugal",li:10,stores:[
+    ["Pingo Doce","Rayon frais, plats préparés, fruits."],
+    ["Continente","Grand choix, légumineuses cuites, conserves de poisson."],
+    ["Lidl","Noix, yaourts, fruits secs."],
+    ["Aldi","Petits prix, conserves, pain complet."]]},
   xx:{label:"Autre pays (en anglais)",li:2,stores:[
     ["Lidl","Présent dans une grande partie de l'Europe."],
     ["Aldi","Présent en Europe, aux États-Unis et en Australie."],
@@ -262,16 +345,70 @@ var ING={
  hazelnuts:["Épicerie","noisettes","hazelnuts","hasselnødder","Haselnüsse","avellanas","nocciole"],
  hardcheese:["Frais","fromage à pâte dure","hard cheese","hård ost","Hartkäse","queso curado","formaggio stagionato"]
 };
+/* Langues ajoutées: 7=nl 8=pl 9=sv 10=pt (à la suite des fiches ci-dessus) */
+var EXTRA={
+ skyr:["skyr of Griekse yoghurt","skyr lub jogurt grecki","skyr eller grekisk yoghurt","skyr ou iogurte grego"],
+ berries:["bosvruchten","owoce leśne","bär","frutos vermelhos"],
+ walnuts:["walnoten","orzechy włoskie","valnötter","nozes"],
+ oats:["havermout","płatki owsiane","havregryn","flocos de aveia"],
+ plantmilk:["plantaardige drank","napój roślinny","växtbaserad dryck","bebida vegetal"],
+ banana:["banaan","banan","banan","banana"],
+ cinnamon:["kaneel","cynamon","kanel","canela"],
+ ricecakes:["rijstwafels","wafle ryżowe","riskakor","bolachas de arroz"],
+ pbutter:["pindakaas","masło orzechowe","jordnötssmör","manteiga de amendoim"],
+ chickpeas:["kikkererwten (blik)","ciecierzyca (puszka)","kikärtor (burk)","grão-de-bico (lata)"],
+ cherrytom:["cherrytomaten","pomidorki koktajlowe","körsbärstomater","tomate-cereja"],
+ cucumber:["komkommer","ogórek","gurka","pepino"],
+ lemon:["citroen","cytryna","citron","limão"],
+ oliveoil:["olijfolie (klein flesje)","oliwa z oliwek (mała butelka)","olivolja (liten flaska)","azeite (garrafa pequena)"],
+ tortillas:["volkoren wraps","tortille pełnoziarniste","fullkornstortillas","tortilhas integrais"],
+ tuna:["tonijn (blik)","tuńczyk (puszka)","tonfisk (burk)","atum (lata)"],
+ avocado:["avocado","awokado","avokado","abacate"],
+ rocket:["rucola","rukola","rucola","rúcula"],
+ hummus:["hummus (klein bakje)","hummus (mały pojemnik)","hummus (liten förpackning)","húmus (embalagem pequena)"],
+ carrots:["wortels","marchew","morötter","cenouras"],
+ wholebread:["volkorenbrood","chleb pełnoziarnisty","fullkornsbröd","pão integral"],
+ gazpacho:["gazpacho","gazpacho","gazpacho","gaspacho"],
+ couscous:["volkoren couscous","kuskus pełnoziarnisty","fullkornscouscous","cuscuz integral"],
+ pepper:["paprika","papryka","paprika","pimento"],
+ cumin:["komijn","kmin rzymski","spiskummin","cominho"],
+ eggs:["hardgekookte eieren","jajka na twardo","hårdkokta ägg","ovos cozidos"],
+ lambs:["veldsla","roszponka","vårsallat","alface-de-cordeiro"],
+ rice:["magnetronrijst","ryż w woreczku do mikrofalówki","mikrovågsris","arroz para micro-ondas"],
+ salmon:["gerookte zalm","wędzony łosoś","rökt lax","salmão fumado"],
+ edamame:["edamame","edamame","edamame","edamame"],
+ lentils:["gekookte linzen","ugotowana soczewica","kokta linser","lentilhas cozidas"],
+ redonion:["rode ui","czerwona cebula","rödlök","cebola roxa"],
+ vinegar:["azijn","ocet","vinäger","vinagre"],
+ sardines:["sardines in olijfolie","sardynki w oliwie z oliwek","sardiner i olivolja","sardinhas em azeite"],
+ saladmix:["kant-en-klare salade","gotowa sałatka","färdig sallad","salada pronta"],
+ proteinadd:["ei of plakjes kip","jajko lub plastry kurczaka","ägg eller kycklingpålägg","ovo ou fiambre de frango"],
+ fruit:["vers fruit","świeże owoce","färsk frukt","fruta fresca"],
+ almonds:["amandelen","migdały","mandlar","amêndoas"],
+ apricots:["gedroogde abrikozen","suszone morele","torkade aprikoser","alperces secos"],
+ apple:["appel","jabłko","äpple","maçã"],
+ fromageblanc:["kwark","twaróg","kvarg","queijo fresco batido"],
+ honey:["honing","miód","honung","mel"],
+ hazelnuts:["hazelnoten","orzechy laskowe","hasselnötter","avelãs"],
+ hardcheese:["harde kaas","ser twardy","hårdost","queijo curado"]
+};
+Object.keys(ING).forEach(function(k){ING[k]=ING[k].concat(EXTRA[k]||["","","",""])});
 var AISLES=["Fruits et légumes","Frais","Pain","Épicerie","Conserves"];
 /* Enseigne suggérée par pays: [courses de base, produits frais] */
-var ROLE={fr:["Lidl","Carrefour City"],dk:["Netto","Føtex"],de:["Lidl","REWE"],es:["Mercadona","Mercadona"],it:["Lidl","Coop"],uk:["Lidl","Tesco"],us:["Trader Joe's","Whole Foods"],xx:["Lidl","Supermarché local"]};
+var ROLE={fr:["Lidl","Carrefour City"],dk:["Netto","Føtex"],de:["Lidl","REWE"],es:["Mercadona","Mercadona"],it:["Lidl","Coop"],uk:["Lidl","Tesco"],us:["Trader Joe's","Whole Foods"],be:["Aldi","Delhaize"],bn:["Aldi","Delhaize"],lu:["Lidl","Cactus"],nl:["Lidl","Albert Heijn"],ch:["Denner","Migros"],cr:["Denner","Migros"],at:["Hofer","Billa"],pl:["Biedronka","Carrefour"],se:["Willys","ICA"],pt:["Lidl","Pingo Doce"],xx:["Lidl","Supermarché local"]};
+/* Devise par pays */
+var CUR={fr:"EUR",dk:"DKK",de:"EUR",es:"EUR",it:"EUR",uk:"GBP",us:"USD",be:"EUR",bn:"EUR",lu:"EUR",nl:"EUR",ch:"CHF",cr:"CHF",at:"EUR",pl:"PLN",se:"SEK",pt:"EUR",xx:""};
 /* Phrases à dire: [fr, en, da, de, es, it] (index = langue-1) */
 var PHRASES={
  2:["No sauce, please","Can I have the dressing on the side?","Does this contain gluten?","Does this contain nuts?","I'm vegetarian","Do you have vegetarian dishes?","I'm allergic to …"],
  3:["Uden sauce, tak","Kan jeg få dressingen ved siden af?","Er der gluten i det her?","Er der nødder i?","Jeg er vegetar","Har I vegetarretter?","Jeg er allergisk over for …"],
  4:["Ohne Soße, bitte","Kann ich das Dressing extra haben?","Ist da Gluten drin?","Sind Nüsse darin?","Ich bin Vegetarier(in)","Haben Sie vegetarische Gerichte?","Ich bin allergisch gegen …"],
  5:["Sin salsa, por favor","¿Me pone el aliño aparte?","¿Lleva gluten?","¿Lleva frutos secos?","Soy vegetariano/a","¿Tienen platos vegetarianos?","Soy alérgico/a a …"],
- 6:["Senza salsa, per favore","Posso avere il condimento a parte?","Contiene glutine?","Contiene frutta a guscio?","Sono vegetariano/a","Avete piatti vegetariani?","Sono allergico/a a …"]
+ 6:["Senza salsa, per favore","Posso avere il condimento a parte?","Contiene glutine?","Contiene frutta a guscio?","Sono vegetariano/a","Avete piatti vegetariani?","Sono allergico/a a …"],
+ 7:["Zonder saus, alstublieft","Kan ik de dressing apart krijgen?","Zit hier gluten in?","Zitten hier noten in?","Ik ben vegetariër","Hebben jullie vegetarische gerechten?","Ik ben allergisch voor …"],
+ 8:["Bez sosu, poproszę","Czy mogę dostać dressing osobno?","Czy to zawiera gluten?","Czy są tu orzechy?","Jestem wegetarianinem / wegetarianką","Czy macie dania wegetariańskie?","Mam alergię na …"],
+ 9:["Utan sås, tack","Kan jag få dressingen vid sidan om?","Innehåller det gluten?","Innehåller det nötter?","Jag är vegetarian","Har ni vegetariska rätter?","Jag är allergisk mot …"],
+ 10:["Sem molho, por favor","Posso ter o molho à parte?","Isto tem glúten?","Isto tem frutos secos?","Sou vegetariano/a","Têm pratos vegetarianos?","Sou alérgico/a a …"]
 };
 var FRP=["Sans sauce, s'il vous plaît","Le assaisonnement à part ?","Est-ce qu'il y a du gluten ?","Y a-t-il des fruits à coque ?","Je suis végétarien(ne)","Avez-vous des plats végétariens ?","Je suis allergique à …"];
 FRP[1]="L'assaisonnement à part ?";
@@ -410,11 +547,62 @@ function listText(){
   });
   return out.join("\n").trim();
 }
+/* Prix: fichier prices.json (dépôt) + prix saisis sur cet appareil */
+var PR={remote:[],local:[]};
+var PKEY="assiette-nomade-prix-v1";
+function validPrice(p){return p&&ING[p.ing]&&COUNTRIES[p.country]&&typeof p.price==="number"&&p.price>0&&p.price<100000&&typeof p.date==="string"}
+function loadLocalPrices(){try{var r=localStorage.getItem(PKEY);if(r){var a=JSON.parse(r);if(Array.isArray(a))PR.local=a.filter(validPrice)}}catch(e){}}
+function saveLocalPrices(){try{localStorage.setItem(PKEY,JSON.stringify(PR.local))}catch(e){}}
+function allPrices(){return PR.remote.concat(PR.local)}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function priceFor(k){
+  var st=storeFor(k);
+  var m=allPrices().filter(function(p){return p.ing===k&&p.country===S.country});
+  var same=m.filter(function(p){return p.store===st});
+  var pool=same.length?same:m;
+  if(!pool.length)return null;
+  pool=pool.slice().sort(function(a,b){return String(b.date).localeCompare(String(a.date))});
+  return pool[0];
+}
+function ageText(d){
+  var t=Date.parse(d);if(isNaN(t))return "vu le "+d;
+  var days=Math.max(0,Math.floor((Date.now()-t)/86400000));
+  if(days<=45)return "vu le "+d;
+  return "vu le "+d+" (il y a "+Math.round(days/30)+" mois, à vérifier)";
+}
+function priceHtml(k){
+  var p=priceFor(k);
+  if(!p)return '<small>Prix non renseigné</small>';
+  var bits=[p.price.toFixed(2).replace(".",",")+(p.currency?" "+p.currency:"")];
+  if(p.store!==storeFor(k))bits.push("chez "+p.store);
+  if(p.product)bits.push(p.product);
+  if(p.ref)bits.push("réf. "+p.ref);
+  bits.push(ageText(p.date));
+  return '<small class="price">'+esc(bits.join(" · "))+'</small>';
+}
+function exportPrices(){
+  var seen={},out=[];
+  allPrices().forEach(function(p){
+    var id=[p.ing,p.country,p.store,p.ref||"",p.price,p.date].join("|");
+    if(!seen[id]){seen[id]=1;out.push(p)}
+  });
+  return JSON.stringify({version:1,items:out},null,1);
+}
+function renderPriceForm(){
+  var si=$("ap-ing"),ss=$("ap-store");
+  var vi=si.value,vs=ss.value;
+  if(!si.options.length){
+    si.innerHTML=Object.keys(ING).sort(function(a,b){return ING[a][1].localeCompare(ING[b][1],"fr")}).map(function(k){return '<option value="'+k+'">'+esc(ING[k][1])+'</option>'}).join("");
+  }
+  if(vi)si.value=vi;
+  ss.innerHTML=storeNames().map(function(n){return '<option>'+esc(n)+'</option>'}).join("");
+  if(vs&&storeNames().indexOf(vs)>-1)ss.value=vs;
+}
 function itemRow(k){
   var l=loc(k),cur=storeFor(k);
   var opts=storeNames().map(function(n){return '<option'+(n===cur?' selected':'')+'>'+esc(n)+'</option>'}).join("");
   var name=l?'<span class="loc">'+esc(l)+'</span><small>'+esc(ING[k][1])+' · '+esc(ING[k][0])+'</small>':esc(ING[k][1])+'<small>'+esc(ING[k][0])+'</small>';
-  return '<li><span>'+name+'</span><span class="act"><select class="mini" data-asg="'+k+'" aria-label="Magasin pour '+esc(ING[k][1])+'">'+opts+'</select><button type="button" aria-label="Retirer '+esc(ING[k][1])+'" data-rm="'+k+'">Retirer</button></span></li>';
+  return '<li><span>'+name+priceHtml(k)+'</span><span class="act"><select class="mini" data-asg="'+k+'" aria-label="Magasin pour '+esc(ING[k][1])+'">'+opts+'</select><button type="button" aria-label="Retirer '+esc(ING[k][1])+'" data-rm="'+k+'">Retirer</button></span></li>';
 }
 function renderList(){
   var box=$("listbox");
@@ -427,7 +615,7 @@ function renderList(){
   html+='<div class="row" style="margin-top:16px"><button type="button" class="btn" id="copy">Copier la liste</button><button type="button" class="btn ghost" id="clear">Vider</button></div><div id="fb"></div>';
   box.innerHTML=html;
 }
-function renderAll(){renderWhere();renderChips();renderMeals();renderList()}
+function renderAll(){renderWhere();renderChips();renderMeals();renderList();renderPriceForm()}
 
 document.addEventListener("click",function(e){
   var t=e.target;
@@ -437,6 +625,21 @@ document.addEventListener("click",function(e){
     save();renderList();
   }else if(t.dataset.rm!==undefined){toggle(S.list,t.dataset.rm);save();renderList()}
   else if(t.id==="clear"){S.list=[];save();renderList()}
+  else if(t.id==="ap-save"){
+    var fb=$("ap-fb"),pr=parseFloat(($("ap-price").value||"").replace(",","."));
+    var cur=($("ap-cur").value||"").trim().toUpperCase();
+    if(!(pr>0&&pr<100000)){fb.textContent="Indiquez un prix valide, par exemple 12,50.";return}
+    if(!cur){fb.textContent="Indiquez la devise, par exemple EUR.";return}
+    PR.local.push({ing:$("ap-ing").value,country:S.country,store:$("ap-store").value,product:$("ap-prod").value.trim(),ref:$("ap-ref").value.trim(),price:Math.round(pr*100)/100,currency:cur,date:$("ap-date").value||today(),source:"saisie personnelle"});
+    saveLocalPrices();
+    $("ap-price").value="";$("ap-prod").value="";$("ap-ref").value="";
+    fb.textContent="Prix enregistré sur cet appareil. Il apparaît dans la liste si le produit y figure.";
+    renderList();
+  }
+  else if(t.id==="ap-copy"){
+    var txt2=exportPrices(),fb2=$("ap-fb");
+    try{navigator.clipboard.writeText(txt2).then(function(){fb2.textContent="Fichier copié. Collez-le dans prices.json."},function(){fb2.textContent="La copie a échoué. Réessayez."})}catch(err){fb2.textContent="La copie a échoué. Réessayez."}
+  }
   else if(t.id==="copy"){
     var txt=listText();
     var fallback=function(){$("fb").innerHTML='<textarea readonly id="fbt" style="margin-top:10px;min-height:140px">'+esc(txt)+'</textarea>';var ta=$("fbt");ta.focus();ta.select()};
@@ -449,13 +652,21 @@ document.addEventListener("change",function(e){
 });
 var cs=$("country");
 cs.innerHTML=Object.keys(COUNTRIES).map(function(k){return '<option value="'+k+'">'+COUNTRIES[k].label+'</option>'}).join("");
-cs.addEventListener("change",function(){S.country=cs.value;save();renderAll()});
+cs.addEventListener("change",function(){S.country=cs.value;save();renderAll();$("ap-store").selectedIndex=0;$("ap-cur").value=CUR[S.country]||""});
 $("city").addEventListener("input",function(e){S.city=e.target.value.trim();save();renderWhere()});
 
 load();
 cs.value=COUNTRIES[S.country]?S.country:"fr";
 $("city").value=S.city||"";
+loadLocalPrices();
 renderAll();
+$("ap-cur").value=CUR[S.country]||"";
+$("ap-date").value=today();
+try{
+  fetch("prices.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){
+    if(j&&Array.isArray(j.items)){PR.remote=j.items.filter(validPrice);renderList()}
+  }).catch(function(){});
+}catch(e){}
 
 /* Idée sur mesure avec Claude */
 (async function(){
