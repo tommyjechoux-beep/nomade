@@ -88,7 +88,8 @@ a{color:var(--accent)}
 .aisle{margin-top:18px}
 .storehead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--accent);padding-bottom:6px}
 .storehead a{font-size:.9rem;font-weight:600}
-.list .act{display:flex;gap:8px;align-items:center;flex:none}
+.list .act{display:flex;gap:8px;align-items:center;flex:none;flex-wrap:wrap;justify-content:flex-end}
+.list button.pricebtn{color:var(--accent);font-weight:600}
 select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
 .answer{white-space:pre-wrap;padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .note{font-size:.85rem;color:var(--muted)}
@@ -602,7 +603,7 @@ function itemRow(k){
   var l=loc(k),cur=storeFor(k);
   var opts=storeNames().map(function(n){return '<option'+(n===cur?' selected':'')+'>'+esc(n)+'</option>'}).join("");
   var name=l?'<span class="loc">'+esc(l)+'</span><small>'+esc(ING[k][1])+' · '+esc(ING[k][0])+'</small>':esc(ING[k][1])+'<small>'+esc(ING[k][0])+'</small>';
-  return '<li><span>'+name+priceHtml(k)+'</span><span class="act"><select class="mini" data-asg="'+k+'" aria-label="Magasin pour '+esc(ING[k][1])+'">'+opts+'</select><button type="button" aria-label="Retirer '+esc(ING[k][1])+'" data-rm="'+k+'">Retirer</button></span></li>';
+  return '<li><span>'+name+priceHtml(k)+'</span><span class="act"><select class="mini" data-asg="'+k+'" aria-label="Magasin pour '+esc(ING[k][1])+'">'+opts+'</select><button type="button" class="pricebtn" aria-label="Noter un prix pour '+esc(ING[k][1])+'" data-price="'+k+'">Prix</button><button type="button" aria-label="Retirer '+esc(ING[k][1])+'" data-rm="'+k+'">Retirer</button></span></li>';
 }
 function renderList(){
   var box=$("listbox");
@@ -623,6 +624,16 @@ document.addEventListener("click",function(e){
   if(t.dataset.add!==undefined){
     MEALS[+t.dataset.add].buy.forEach(function(k){if(!has(S.list,k))S.list.push(k)});
     save();renderList();
+  }else if(t.dataset.price!==undefined){
+    var pk=t.dataset.price;
+    renderPriceForm();
+    $("ap-ing").value=pk;
+    $("ap-store").value=storeFor(pk);
+    $("ap-cur").value=$("ap-cur").value||CUR[S.country]||"";
+    $("ap-fb").textContent="Prix de : "+ING[pk][1]+(loc(pk)?" ("+loc(pk)+")":"")+".";
+    var det=$("addprice");det.open=true;
+    det.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});
+    $("ap-price").focus({preventScroll:true});
   }else if(t.dataset.rm!==undefined){toggle(S.list,t.dataset.rm);save();renderList()}
   else if(t.id==="clear"){S.list=[];save();renderList()}
   else if(t.id==="ap-save"){
