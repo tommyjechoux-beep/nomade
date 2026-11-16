@@ -119,7 +119,7 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
 <div class="wrap">
   <header>
     <div class="langbar" role="group" aria-label="Langue / Language"><button type="button" class="chip" data-lang="fr" aria-pressed="true">Français</button><button type="button" class="chip" data-lang="en" aria-pressed="false">English</button></div>
-    <h1>Assiette Nomade</h1>
+    <h1 data-i18n="name">Assiette Nomade</h1>
     <p class="lead" data-i18n="lead">Où manger sainement quand on voyage, quoi acheter au supermarché du coin (avec les noms dans la langue locale), et quoi préparer quand la chambre d'hôtel n'a ni micro-ondes ni frigo.</p>
   </header>
 
@@ -586,6 +586,7 @@ var SD_EN={
  "Cherchez les rayons fruits, conserves et produits frais.":"Look for the fruit, canned goods and chilled aisles."
 };
 var D={
+ name:["Assiette Nomade","Nomad Plate"],
  desc:["Trouvez où manger sainement en voyage : magasins proches, noms des produits dans la langue locale, idées de repas selon l'équipement de la chambre.","Find where to eat healthily while travelling: nearby stores, product names in the local language, meal ideas based on your room's equipment."],
  lead:["Où manger sainement quand on voyage, quoi acheter au supermarché du coin (avec les noms dans la langue locale), et quoi préparer quand la chambre d'hôtel n'a ni micro-ondes ni frigo.","Where to eat healthily when you travel, what to buy at the local supermarket (with names in the local language), and what to prepare when your hotel room has no microwave or fridge."],
  where:["Où êtes-vous ?","Where are you?"],
@@ -1029,6 +1030,8 @@ function applyLang(){
   document.querySelectorAll("[data-i18n-ph]").forEach(function(el){el.placeholder=T(el.getAttribute("data-i18n-ph"))});
   document.querySelectorAll("[data-i18n-aria]").forEach(function(el){el.setAttribute("aria-label",T(el.getAttribute("data-i18n-aria")))});
   var md=document.querySelector('meta[name="description"]');if(md)md.setAttribute("content",T("desc"));
+  document.title=T("name");
+  var at=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(at)at.setAttribute("content",lang==="en"?"Nomad Plate":"Nomade");
   document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.getAttribute("data-lang")===lang?"true":"false")});
   fillCountries();
   renderAll();
