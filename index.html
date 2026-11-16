@@ -209,7 +209,11 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
 <div id="scan" class="scan" role="dialog" aria-modal="true" aria-label="Scanner un code-barres" hidden>
   <video id="scan-video" playsinline muted></video>
   <p id="scan-msg" class="scan-msg" aria-live="polite"></p>
-  <button type="button" class="btn" id="scan-close">Fermer</button>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+    <button type="button" class="btn" id="scan-photo-btn">Photographier le code-barres</button>
+    <button type="button" class="btn" id="scan-close">Fermer</button>
+  </div>
+  <input type="file" id="scan-photo" accept="image/*" capture="environment" hidden>
 </div>
 <script>
 (function(){
@@ -607,7 +611,7 @@ function exportPrices(){
   return JSON.stringify({version:1,items:out},null,1);
 }
 /* Scan de code-barres avec l'appareil photo (lecteur ZXing, copie locale zxing.min.js) */
-var SC={reader:null,loading:null};
+var SC={loading:null,timer:null,stream:null,busy:false};
 function loadZXing(){
   if(window.ZXing)return Promise.resolve();
   if(SC.loading)return SC.loading;
@@ -619,8 +623,10 @@ function loadZXing(){
   return SC.loading;
 }
 function scanStop(){
-  try{if(SC.reader)SC.reader.reset()}catch(e){}
-  SC.reader=null;$("scan").hidden=true;
+  if(SC.timer){clearInterval(SC.timer);SC.timer=null}
+  if(SC.stream){try{SC.stream.getTracks().forEach(function(t){t.stop()})}catch(e){}SC.stream=null}
+  try{$("scan-video").srcObject=null}catch(e){}
+  SC.busy=false;$("scan").hidden=true;
 }
 function onScanned(code){
   $("ap-ref").value=code;
@@ -639,25 +645,84 @@ function onScanned(code){
     })
     .catch(function(){clearTimeout(tm)});
 }
-function scanOpen(){
+function zxHints(){
+  var Z=window.ZXing,hints=new Map();
+  hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E]);
+  hints.set(Z.DecodeHintType.TRY_HARDER,true);
+  return hints;
+}
+var SCAN_TIP="Placez le code-barres bien à plat, à 15-20 cm, avec de la lumière. Si rien ne se lit, touchez « Photographier le code-barres ».";
+function cropToUrl(img,fx){
+  var W=img.naturalWidth,H=img.naturalHeight,cw=Math.round(W*fx),ch=Math.round(H*fx);
+  var sx=Math.round((W-cw)/2),sy=Math.round((H-ch)/2),sc=Math.min(1,3200/Math.max(cw,ch));
+  var c=document.createElement("canvas");c.width=Math.round(cw*sc);c.height=Math.round(ch*sc);
+  c.getContext("2d").drawImage(img,sx,sy,cw,ch,0,0,c.width,c.height);
+  return new Promise(function(ok,ko){c.toBlob(function(bl){bl?ok(URL.createObjectURL(bl)):ko(new Error("blob"))},"image/png")});
+}
+function decodeUrl(u){
+  var rd=new window.ZXing.BrowserMultiFormatReader(zxHints());
+  return rd.decodeFromImageUrl(u).then(function(r){URL.revokeObjectURL(u);return r},function(e){URL.revokeObjectURL(u);throw e});
+}
+function tryCrops(img,list){
+  if(!list.length)return Promise.reject(new Error("none"));
+  return cropToUrl(img,list[0]).then(decodeUrl).catch(function(){return tryCrops(img,list.slice(1))});
+}
+function scanFromPhoto(file){
   var msg=$("scan-msg");
+  if(!file)return;
+  msg.textContent="Lecture de la photo…";
+  loadZXing().then(function(){
+    return new Promise(function(ok,ko){
+      var url=URL.createObjectURL(file),img=new Image();
+      img.onload=function(){URL.revokeObjectURL(url);ok(img)};
+      img.onerror=function(){URL.revokeObjectURL(url);ko(new Error("img"))};
+      img.src=url;
+    });
+  }).then(function(img){
+    return tryCrops(img,[1,0.6,0.35]);
+  }).then(function(r){
+    scanStop();onScanned(r.getText());
+  }).catch(function(){
+    msg.textContent="Code non reconnu sur la photo. Remplissez l'image avec le code-barres (15 à 20 cm), bien à plat et éclairé, puis réessayez.";
+  });
+  $("scan-photo").value="";
+}
+function readFrame(vid,fx,mr){
+  var W=vid.videoWidth,H=vid.videoHeight,cw=Math.round(W*fx),ch=Math.round(H*fx);
+  var c=document.createElement("canvas");c.width=cw;c.height=ch;
+  c.getContext("2d").drawImage(vid,Math.round((W-cw)/2),Math.round((H-ch)/2),cw,ch,0,0,cw,ch);
+  var Z=window.ZXing,bmp=new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(c)));
+  return mr.decode(bmp).getText();
+}
+function scanOpen(){
+  var msg=$("scan-msg"),vid=$("scan-video");
   $("scan").hidden=false;msg.textContent="Ouverture de l'appareil photo…";
   loadZXing().then(function(){
-    var Z=window.ZXing,hints=new Map();
-    hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E]);
-    hints.set(Z.DecodeHintType.TRY_HARDER,true);
-    var rd=new Z.BrowserMultiFormatReader(hints,300);
-    SC.reader=rd;
-    msg.textContent="Visez le code-barres du produit.";
-    return rd.decodeFromConstraints({video:{facingMode:{ideal:"environment"}},audio:false},$("scan-video"),function(res){
-      if(res&&SC.reader===rd){var code=res.getText();scanStop();onScanned(code)}
-    });
+    return navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false});
+  }).then(function(stream){
+    if($("scan").hidden){stream.getTracks().forEach(function(t){t.stop()});return}
+    SC.stream=stream;vid.srcObject=stream;
+    var started=vid.play();if(started&&started.catch)started.catch(function(){});
+    msg.textContent=SCAN_TIP;
+    var Z=window.ZXing,mr=new Z.MultiFormatReader();mr.setHints(zxHints());
+    var n=0;
+    SC.timer=setInterval(function(){
+      if(SC.busy||!vid.videoWidth)return;
+      SC.busy=true;
+      var fx=[1,0.6][n++%2];
+      try{
+        var code=readFrame(vid,fx,mr);
+        if(code){scanStop();onScanned(code);return}
+      }catch(e){/* pas de code sur cette image : on réessaie */}
+      SC.busy=false;
+    },250);
   }).catch(function(e){
-    var n=e&&e.name;
-    msg.textContent=n==="NotAllowedError"?"L'accès à l'appareil photo est refusé. Autorisez-le dans les réglages du navigateur, puis réessayez.":n==="NotFoundError"?"Aucun appareil photo trouvé sur cet appareil.":"Impossible d'ouvrir l'appareil photo ou de charger le lecteur. Vérifiez le réseau et réessayez.";
+    var nm=e&&e.name;
+    msg.textContent=nm==="NotAllowedError"?"L'accès à l'appareil photo est refusé. Autorisez-le dans les réglages du navigateur, puis réessayez.":nm==="NotFoundError"?"Aucun appareil photo trouvé sur cet appareil.":"Impossible d'ouvrir l'appareil photo ou de charger le lecteur. Vérifiez le réseau, ou utilisez « Photographier le code-barres ».";
   });
 }
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("scan").hidden)scanStop()});
+$("scan-photo").addEventListener("change",function(){scanFromPhoto(this.files&&this.files[0])});
 function renderPriceForm(){
   var si=$("ap-ing"),ss=$("ap-store");
   var vi=si.value,vs=ss.value;
@@ -707,6 +772,7 @@ document.addEventListener("click",function(e){
   else if(t.id==="clear"){S.list=[];save();renderList()}
   else if(t.id==="ap-scan")scanOpen();
   else if(t.id==="scan-close")scanStop();
+  else if(t.id==="scan-photo-btn")$("scan-photo").click();
   else if(t.id==="ap-save"){
     var fb=$("ap-fb"),pr=parseFloat(($("ap-price").value||"").replace(",","."));
     var cur=($("ap-cur").value||"").trim().toUpperCase();
