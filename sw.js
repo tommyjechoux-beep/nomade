@@ -1,7 +1,7 @@
 /* Service worker d'Assiette Nomade : fonctionne sans réseau, mais cherche toujours la version
    la plus récente d'abord (réseau en premier, copie locale en secours). */
-const VERSION = "nomade-v1";
-const SHELL = ["./", "index.html", "prices.json", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
+const VERSION = "nomade-v2";
+const SHELL = ["./", "index.html", "prices.json", "manifest.webmanifest", "icon-192.png", "icon-512.png", "zxing.min.js"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(

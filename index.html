@@ -105,6 +105,11 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
 .addprice summary{cursor:pointer;font-weight:600}
 .addprice .row{margin-top:12px}
 .addprice .field.narrow{flex:0 1 120px}
+.scan{position:fixed;inset:0;z-index:50;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px}
+.scan[hidden]{display:none}
+.scan video{width:100%;max-width:520px;max-height:60vh;object-fit:cover;border-radius:12px;background:#111}
+.scan-msg{color:#fff;text-align:center;max-width:480px;margin:0}
+.scan .btn{background:#fff;color:#16261E;border-color:#fff}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -174,7 +179,7 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
       </div>
       <div class="row">
         <div class="field"><label class="label" for="ap-prod">Nom exact sur l'étiquette (facultatif)</label><input type="text" id="ap-prod" autocomplete="off"></div>
-        <div class="field"><label class="label" for="ap-ref">Référence ou code-barres (facultatif)</label><input type="text" id="ap-ref" inputmode="numeric" autocomplete="off"></div>
+        <div class="field"><label class="label" for="ap-ref">Référence ou code-barres (facultatif)</label><input type="text" id="ap-ref" inputmode="numeric" autocomplete="off"><button type="button" class="btn ghost" id="ap-scan" style="margin-top:8px">Scanner le code-barres</button></div>
       </div>
       <div class="row">
         <div class="field narrow"><label class="label" for="ap-price">Prix</label><input type="text" id="ap-price" inputmode="decimal" placeholder="12,50" autocomplete="off"></div>
@@ -201,6 +206,11 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
   <p class="note">Les idées de repas sont des suggestions générales, pas un avis diététique ni médical.</p>
 </div>
 
+<div id="scan" class="scan" role="dialog" aria-modal="true" aria-label="Scanner un code-barres" hidden>
+  <video id="scan-video" playsinline muted></video>
+  <p id="scan-msg" class="scan-msg" aria-live="polite"></p>
+  <button type="button" class="btn" id="scan-close">Fermer</button>
+</div>
 <script>
 (function(){
 "use strict";
@@ -596,6 +606,58 @@ function exportPrices(){
   });
   return JSON.stringify({version:1,items:out},null,1);
 }
+/* Scan de code-barres avec l'appareil photo (lecteur ZXing, copie locale zxing.min.js) */
+var SC={reader:null,loading:null};
+function loadZXing(){
+  if(window.ZXing)return Promise.resolve();
+  if(SC.loading)return SC.loading;
+  SC.loading=new Promise(function(ok,ko){
+    var s=document.createElement("script");s.src="zxing.min.js";s.onload=ok;
+    s.onerror=function(){SC.loading=null;ko(new Error("load"))};
+    document.head.appendChild(s);
+  });
+  return SC.loading;
+}
+function scanStop(){
+  try{if(SC.reader)SC.reader.reset()}catch(e){}
+  SC.reader=null;$("scan").hidden=true;
+}
+function onScanned(code){
+  $("ap-ref").value=code;
+  var fb=$("ap-fb");fb.textContent="Code lu : "+code+".";
+  if(!navigator.onLine)return;
+  var ctl=new AbortController(),tm=setTimeout(function(){ctl.abort()},6000);
+  fetch("https://world.openfoodfacts.org/api/v2/product/"+encodeURIComponent(code)+"?fields=product_name,brands,quantity",{signal:ctl.signal})
+    .then(function(r){return r.ok?r.json():null})
+    .then(function(j){
+      clearTimeout(tm);
+      var p=j&&j.status===1&&j.product;
+      if(!p){fb.textContent="Code lu : "+code+". Produit inconnu d'Open Food Facts : tapez le nom si vous voulez.";return}
+      var nm=[p.product_name,p.brands&&String(p.brands).split(",")[0],p.quantity].filter(Boolean).join(" · ");
+      if(nm&&!$("ap-prod").value)$("ap-prod").value=nm;
+      fb.textContent="Code lu : "+code+(nm?" · "+nm:"")+".";
+    })
+    .catch(function(){clearTimeout(tm)});
+}
+function scanOpen(){
+  var msg=$("scan-msg");
+  $("scan").hidden=false;msg.textContent="Ouverture de l'appareil photo…";
+  loadZXing().then(function(){
+    var Z=window.ZXing,hints=new Map();
+    hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,[Z.BarcodeFormat.EAN_13,Z.BarcodeFormat.EAN_8,Z.BarcodeFormat.UPC_A,Z.BarcodeFormat.UPC_E]);
+    hints.set(Z.DecodeHintType.TRY_HARDER,true);
+    var rd=new Z.BrowserMultiFormatReader(hints,300);
+    SC.reader=rd;
+    msg.textContent="Visez le code-barres du produit.";
+    return rd.decodeFromConstraints({video:{facingMode:{ideal:"environment"}},audio:false},$("scan-video"),function(res){
+      if(res&&SC.reader===rd){var code=res.getText();scanStop();onScanned(code)}
+    });
+  }).catch(function(e){
+    var n=e&&e.name;
+    msg.textContent=n==="NotAllowedError"?"L'accès à l'appareil photo est refusé. Autorisez-le dans les réglages du navigateur, puis réessayez.":n==="NotFoundError"?"Aucun appareil photo trouvé sur cet appareil.":"Impossible d'ouvrir l'appareil photo ou de charger le lecteur. Vérifiez le réseau et réessayez.";
+  });
+}
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("scan").hidden)scanStop()});
 function renderPriceForm(){
   var si=$("ap-ing"),ss=$("ap-store");
   var vi=si.value,vs=ss.value;
@@ -643,6 +705,8 @@ document.addEventListener("click",function(e){
     $("ap-price").focus({preventScroll:true});
   }else if(t.dataset.rm!==undefined){toggle(S.list,t.dataset.rm);save();renderList()}
   else if(t.id==="clear"){S.list=[];save();renderList()}
+  else if(t.id==="ap-scan")scanOpen();
+  else if(t.id==="scan-close")scanStop();
   else if(t.id==="ap-save"){
     var fb=$("ap-fb"),pr=parseFloat(($("ap-price").value||"").replace(",","."));
     var cur=($("ap-cur").value||"").trim().toUpperCase();
