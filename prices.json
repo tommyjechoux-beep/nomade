@@ -1,4 +1,71 @@
 {
  "version": 1,
- "items": []
+ "items": [
+  {
+   "ing": "fruit",
+   "country": "dk",
+   "store": "Netto",
+   "product": "Kaki",
+   "ref": "",
+   "price": 28,
+   "currency": "DKK",
+   "date": "2026-11-16",
+   "source": "saisie personnelle"
+  },
+  {
+   "ing": "carrots",
+   "country": "dk",
+   "store": "Netto",
+   "product": "",
+   "ref": "",
+   "price": 15,
+   "currency": "DKK",
+   "date": "2026-11-16",
+   "source": "saisie personnelle"
+  },
+  {
+   "ing": "redonion",
+   "country": "dk",
+   "store": "Netto",
+   "product": "",
+   "ref": "5712877079212",
+   "price": 8,
+   "currency": "DKK",
+   "date": "2026-11-16",
+   "source": "saisie personnelle"
+  },
+  {
+   "ing": "eggs",
+   "country": "dk",
+   "store": "Netto",
+   "product": "",
+   "ref": "",
+   "price": 41,
+   "currency": "DKK",
+   "date": "2026-11-16",
+   "source": "saisie personnelle"
+  },
+  {
+   "ing": "fromageblanc",
+   "country": "dk",
+   "store": "Netto",
+   "product": "Skyr",
+   "ref": "",
+   "price": 32,
+   "currency": "DKK",
+   "date": "2026-11-16",
+   "source": "saisie personnelle"
+  },
+  {
+   "ing": "honey",
+   "country": "dk",
+   "store": "Netto",
+   "product": "",
+   "ref": "",
+   "price": 31,
+   "currency": "DKK",
+   "date": "2026-11-16",
+   "source": "saisie personnelle"
+  }
+ ]
 }
