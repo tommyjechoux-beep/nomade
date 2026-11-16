@@ -107,6 +107,7 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
 .addprice .field.narrow{flex:0 1 120px}
 .scan{position:fixed;inset:0;z-index:50;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px}
 .scan[hidden]{display:none}
+.langbar{display:flex;gap:8px;margin-bottom:16px}
 .scan video{width:100%;max-width:520px;max-height:60vh;object-fit:cover;border-radius:12px;background:#111}
 .scan-msg{color:#fff;text-align:center;max-width:480px;margin:0}
 .scan .btn{background:#fff;color:#16261E;border-color:#fff}
@@ -117,101 +118,102 @@ select.mini{width:auto;max-width:150px;padding:4px 8px;font-size:.85rem}
 <body>
 <div class="wrap">
   <header>
+    <div class="langbar" role="group" aria-label="Langue / Language"><button type="button" class="chip" data-lang="fr" aria-pressed="true">Français</button><button type="button" class="chip" data-lang="en" aria-pressed="false">English</button></div>
     <h1>Assiette Nomade</h1>
-    <p class="lead">Où manger sainement quand on voyage, quoi acheter au supermarché du coin (avec les noms dans la langue locale), et quoi préparer quand la chambre d'hôtel n'a ni micro-ondes ni frigo.</p>
+    <p class="lead" data-i18n="lead">Où manger sainement quand on voyage, quoi acheter au supermarché du coin (avec les noms dans la langue locale), et quoi préparer quand la chambre d'hôtel n'a ni micro-ondes ni frigo.</p>
   </header>
 
   <section aria-labelledby="h-where">
-    <h2 id="h-where">Où êtes-vous ?</h2>
+    <h2 id="h-where" data-i18n="where">Où êtes-vous ?</h2>
     <div class="row">
-      <div class="field"><label class="label" for="country">Pays</label>
+      <div class="field"><label class="label" for="country" data-i18n="country">Pays</label>
         <select id="country"></select></div>
-      <div class="field"><label class="label" for="city">Ville ou quartier (facultatif)</label>
-        <input type="text" id="city" placeholder="ex. Copenhague, Vesterbro" autocomplete="off"></div>
+      <div class="field"><label class="label" for="city" data-i18n="city">Ville ou quartier (facultatif)</label>
+        <input type="text" id="city" data-i18n-ph="ph_city" placeholder="ex. Copenhague, Vesterbro" autocomplete="off"></div>
     </div>
-    <p class="sub">Les enseignes sont les chaînes courantes du pays. Chaque lien ouvre Google Maps sur les adresses les plus proches, autour de la ville indiquée ou autour de vous.</p>
-    <h3>Supermarchés et magasins</h3>
+    <p class="sub" data-i18n="where_sub">Les enseignes sont les chaînes courantes du pays. Chaque lien ouvre Google Maps sur les adresses les plus proches, autour de la ville indiquée ou autour de vous.</p>
+    <h3 data-i18n="stores_h">Supermarchés et magasins</h3>
     <div class="stores" id="stores"></div>
   </section>
 
   <section aria-labelledby="h-out">
-    <h2 id="h-out">Manger dehors</h2>
-    <p class="sub">Une recherche par type de plat, pour trouver ce qui est proche et léger.</p>
+    <h2 id="h-out" data-i18n="out">Manger dehors</h2>
+    <p class="sub" data-i18n="out_sub">Une recherche par type de plat, pour trouver ce qui est proche et léger.</p>
     <div class="row" id="outq"></div>
-    <h3>Au restaurant, quelques échanges simples</h3>
+    <h3 data-i18n="swaps_h">Au restaurant, quelques échanges simples</h3>
     <ul class="swaps" id="swaps"></ul>
     <div id="phrasebox"></div>
   </section>
 
   <section aria-labelledby="h-c">
-    <h2 id="h-c">Votre profil</h2>
-    <div class="group"><span class="label">Raccourcis selon votre hébergement</span>
+    <h2 id="h-c" data-i18n="profile">Votre profil</h2>
+    <div class="group"><span class="label" data-i18n="presets">Raccourcis selon votre hébergement</span>
       <div class="row" id="c-presets"></div></div>
-    <div class="group"><span class="label">Il n'y a pas de</span>
+    <div class="group"><span class="label" data-i18n="nohave">Il n'y a pas de</span>
       <div class="row" id="c-equip"></div></div>
-    <div class="group"><span class="label">Régime</span>
+    <div class="group"><span class="label" data-i18n="diet">Régime</span>
       <div class="row" id="c-diet"></div></div>
-    <div class="group"><span class="label">Allergies et intolérances : à éviter absolument</span>
+    <div class="group"><span class="label" data-i18n="avoid">Allergies et intolérances : à éviter absolument</span>
       <div class="row" id="c-avoid"></div>
-      <div class="warn" id="avoidwarn" hidden>Ces repères sont indicatifs et peuvent être faux pour un produit précis. Avec une vraie allergie, lisez toujours l'étiquette et demandez en magasin ou au restaurant. L'avoine, par exemple, peut contenir des traces de gluten.</div></div>
-    <div class="group"><span class="label">Envies</span>
+      <div class="warn" id="avoidwarn" data-i18n="avoidwarn" hidden>Ces repères sont indicatifs et peuvent être faux pour un produit précis. Avec une vraie allergie, lisez toujours l'étiquette et demandez en magasin ou au restaurant. L'avoine, par exemple, peut contenir des traces de gluten.</div></div>
+    <div class="group"><span class="label" data-i18n="want">Envies</span>
       <div class="row" id="c-want"></div></div>
-    <div class="group"><span class="label">Moment</span>
+    <div class="group"><span class="label" data-i18n="moment">Moment</span>
       <div class="row" id="c-type"></div></div>
   </section>
 
   <section aria-labelledby="h-m">
-    <h2 id="h-m">Idées de repas</h2>
+    <h2 id="h-m" data-i18n="meals_h">Idées de repas</h2>
     <p class="sub" id="count" aria-live="polite"></p>
     <div class="meals" id="meals"></div>
   </section>
 
   <section aria-labelledby="h-l">
-    <h2 id="h-l">Liste de courses</h2>
-    <p class="sub">Chaque produit est associé à l'enseigne du pays où il est le plus facile à trouver. Vous pouvez la changer si elle n'existe pas près de vous. Le nom local est à montrer en magasin.</p>
+    <h2 id="h-l" data-i18n="list_h">Liste de courses</h2>
+    <p class="sub" data-i18n="list_sub">Chaque produit est associé à l'enseigne du pays où il est le plus facile à trouver. Vous pouvez la changer si elle n'existe pas près de vous. Le nom local est à montrer en magasin.</p>
     <div id="listbox"></div>
     <details class="addprice" id="addprice">
-      <summary>Ajouter un prix vu en magasin</summary>
-      <p class="sub" style="margin-top:10px">Notez le prix lu sur l'étiquette en rayon. Il est enregistré sur cet appareil, avec sa date, et s'affiche dans la liste. Aucun prix n'est estimé : sans saisie, la liste indique « prix non renseigné ».</p>
+      <summary data-i18n="ap_sum">Ajouter un prix vu en magasin</summary>
+      <p class="sub" data-i18n="ap_sub" style="margin-top:10px">Notez le prix lu sur l'étiquette en rayon. Il est enregistré sur cet appareil, avec sa date, et s'affiche dans la liste. Aucun prix n'est estimé : sans saisie, la liste indique « prix non renseigné ».</p>
       <div class="row">
-        <div class="field"><label class="label" for="ap-ing">Produit</label><select id="ap-ing"></select></div>
-        <div class="field"><label class="label" for="ap-store">Magasin</label><select id="ap-store"></select></div>
+        <div class="field"><label class="label" for="ap-ing" data-i18n="ap_prod_l">Produit</label><select id="ap-ing"></select></div>
+        <div class="field"><label class="label" for="ap-store" data-i18n="ap_store_l">Magasin</label><select id="ap-store"></select></div>
       </div>
       <div class="row">
-        <div class="field"><label class="label" for="ap-prod">Nom exact sur l'étiquette (facultatif)</label><input type="text" id="ap-prod" autocomplete="off"></div>
-        <div class="field"><label class="label" for="ap-ref">Référence ou code-barres (facultatif)</label><input type="text" id="ap-ref" inputmode="numeric" autocomplete="off"><button type="button" class="btn ghost" id="ap-scan" style="margin-top:8px">Scanner le code-barres</button></div>
+        <div class="field"><label class="label" for="ap-prod" data-i18n="ap_name_l">Nom exact sur l'étiquette (facultatif)</label><input type="text" id="ap-prod" autocomplete="off"></div>
+        <div class="field"><label class="label" for="ap-ref" data-i18n="ap_ref_l">Référence ou code-barres (facultatif)</label><input type="text" id="ap-ref" inputmode="numeric" autocomplete="off"><button type="button" class="btn ghost" id="ap-scan" data-i18n="ap_scan" style="margin-top:8px">Scanner le code-barres</button></div>
       </div>
       <div class="row">
-        <div class="field narrow"><label class="label" for="ap-price">Prix</label><input type="text" id="ap-price" inputmode="decimal" placeholder="12,50" autocomplete="off"></div>
-        <div class="field narrow"><label class="label" for="ap-cur">Devise</label><input type="text" id="ap-cur" maxlength="3" autocomplete="off"></div>
-        <div class="field narrow"><label class="label" for="ap-date">Date</label><input type="date" id="ap-date"></div>
+        <div class="field narrow"><label class="label" for="ap-price" data-i18n="ap_price_l">Prix</label><input type="text" id="ap-price" inputmode="decimal" data-i18n-ph="ph_price" placeholder="12,50" autocomplete="off"></div>
+        <div class="field narrow"><label class="label" for="ap-cur" data-i18n="ap_cur_l">Devise</label><input type="text" id="ap-cur" maxlength="3" autocomplete="off"></div>
+        <div class="field narrow"><label class="label" for="ap-date" data-i18n="ap_date_l">Date</label><input type="date" id="ap-date"></div>
       </div>
       <div class="row" style="margin-top:12px">
-        <button type="button" class="btn" id="ap-save">Enregistrer ce prix</button>
-        <button type="button" class="btn ghost" id="ap-copy">Copier le fichier prices.json</button>
+        <button type="button" class="btn" id="ap-save" data-i18n="ap_save">Enregistrer ce prix</button>
+        <button type="button" class="btn ghost" id="ap-copy" data-i18n="ap_copy">Copier le fichier prices.json</button>
       </div>
       <p class="note" id="ap-fb" aria-live="polite" style="margin-top:8px"></p>
     </details>
   </section>
 
   <section id="ask" aria-labelledby="h-a" hidden>
-    <h2 id="h-a">Une idée sur mesure</h2>
-    <p class="sub">Décrivez la situation et Claude propose trois idées qui tiennent compte de votre profil et des enseignes du pays.</p>
-    <div class="field"><label class="label" for="free">Votre situation</label>
-      <textarea id="free" placeholder="ex. Nuit d'hôtel à Aarhus, arrivée à 21 h, magasin ouvert jusqu'à 22 h, pas de cuisine, je veux quelque chose de rassasiant."></textarea></div>
-    <div class="row"><button class="btn" id="askbtn" type="button">Proposer des idées</button></div>
+    <h2 id="h-a" data-i18n="ask_h">Une idée sur mesure</h2>
+    <p class="sub" data-i18n="ask_sub">Décrivez la situation et Claude propose trois idées qui tiennent compte de votre profil et des enseignes du pays.</p>
+    <div class="field"><label class="label" for="free" data-i18n="ask_l">Votre situation</label>
+      <textarea id="free" data-i18n-ph="ph_free" placeholder="ex. Nuit d'hôtel à Aarhus, arrivée à 21 h, magasin ouvert jusqu'à 22 h, pas de cuisine, je veux quelque chose de rassasiant."></textarea></div>
+    <div class="row"><button class="btn" id="askbtn" type="button" data-i18n="ask_btn">Proposer des idées</button></div>
     <div class="answer" id="answer" hidden></div>
   </section>
 
-  <p class="note">Les idées de repas sont des suggestions générales, pas un avis diététique ni médical.</p>
+  <p class="note" data-i18n="foot">Les idées de repas sont des suggestions générales, pas un avis diététique ni médical.</p>
 </div>
 
-<div id="scan" class="scan" role="dialog" aria-modal="true" aria-label="Scanner un code-barres" hidden>
+<div id="scan" class="scan" role="dialog" aria-modal="true" data-i18n-aria="scan_aria" aria-label="Scanner un code-barres" hidden>
   <video id="scan-video" playsinline muted></video>
   <p id="scan-msg" class="scan-msg" aria-live="polite"></p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-    <button type="button" class="btn" id="scan-photo-btn">Photographier le code-barres</button>
-    <button type="button" class="btn" id="scan-close">Fermer</button>
+    <button type="button" class="btn" id="scan-photo-btn" data-i18n="scan_photo">Photographier le code-barres</button>
+    <button type="button" class="btn" id="scan-close" data-i18n="scan_close">Fermer</button>
   </div>
   <input type="file" id="scan-photo" accept="image/*" capture="environment" hidden>
 </div>
@@ -432,8 +434,8 @@ var PHRASES={
  9:["Utan sås, tack","Kan jag få dressingen vid sidan om?","Innehåller det gluten?","Innehåller det nötter?","Jag är vegetarian","Har ni vegetariska rätter?","Jag är allergisk mot …"],
  10:["Sem molho, por favor","Posso ter o molho à parte?","Isto tem glúten?","Isto tem frutos secos?","Sou vegetariano/a","Têm pratos vegetarianos?","Sou alérgico/a a …"]
 };
-var FRP=["Sans sauce, s'il vous plaît","Le assaisonnement à part ?","Est-ce qu'il y a du gluten ?","Y a-t-il des fruits à coque ?","Je suis végétarien(ne)","Avez-vous des plats végétariens ?","Je suis allergique à …"];
-FRP[1]="L'assaisonnement à part ?";
+var FRP=["Sans sauce, s'il vous plaît","Puis-je avoir l'assaisonnement à part ?","Est-ce qu'il y a du gluten ?","Y a-t-il des fruits à coque ?","Je suis végétarien(ne)","Avez-vous des plats végétariens ?","Je suis allergique à …"];
+PHRASES[1]=FRP;
 var OUT=[["Salades","healthy salad"],["Bols poke","poke bowl"],["Végétarien","vegetarian restaurant"],["Soupes","soup"],["Poisson grillé","grilled fish"],["Petit-déjeuner","healthy breakfast"],["Jus frais","fresh juice"]];
 var SWAPS=[["Frites","légumes vapeur ou salade"],["Sauce sur le plat","sauce à part"],["Frit ou pané","grillé, rôti ou vapeur"],["Soda","eau pétillante ou thé"],["Grosse portion de pâtes","demi-portion et double légumes"],["Viennoiserie à l'hôtel","œufs, yaourt et fruits"]];
 var EQUIP=[["fridge","Frigo"],["micro","Micro-ondes"],["kettle","Bouilloire"],["cutlery","Couverts"]];
@@ -474,7 +476,220 @@ var MEALS=[
  {n:"Pomme et fromage à pâte dure",t:"s",need:[],v:1,vg:0,a:["dairy"],p:1,c:1,buy:["apple","hardcheese"],how:"Un fromage à pâte dure supporte quelques heures hors du frais."},
  {n:"Pomme et beurre de cacahuète",t:"s",need:["cutlery"],v:1,vg:1,a:["peanut"],p:1,c:1,buy:["apple","pbutter"],how:"Une pomme à croquer avec du beurre de cacahuète en pot individuel si possible."}
 ];
-var S={country:"fr",city:"",excl:[],avoid:[],veg:false,vegan:false,prot:false,cheap:false,type:"all",list:[],assign:{}};
+var MEALS_EN=[
+ ["Skyr, berries and walnuts","Mix in the tub and add the walnuts at the last moment so they stay crunchy."],
+ ["Overnight oats","Oats and plant milk in a sealed jar, chilled overnight. Ready when you wake up."],
+ ["Porridge with hot water","Pour kettle water over the oats, cover for 3 minutes, add the banana."],
+ ["Yogurt, oats, banana and honey","Stir the oats into the yogurt, add sliced banana and a drizzle of honey."],
+ ["Banana, peanut butter and rice cakes","Spread the rice cakes and mash the banana on top. Nothing to heat."],
+ ["Chickpea and tomato salad","Drain the chickpeas, toss with the vegetables, lemon and oil."],
+ ["Tuna, chickpea and cucumber salad","Mix drained tuna, chickpeas and diced cucumber. Add lemon and oil."],
+ ["Tuna, avocado and rocket wrap","Spread the avocado, add the tuna and rocket, then roll up."],
+ ["Hummus, raw vegetables and wholemeal bread","Buy a small tub and finish it the same day, so you don't need to store it."],
+ ["Hummus and avocado toast","Spread hummus on the bread, top with mashed avocado and sliced tomatoes."],
+ ["Gazpacho and wholemeal bread","Drink it cold straight from the carton. The walnuts add protein."],
+ ["Wholemeal couscous, chickpeas and bell pepper","Pour boiling water over the couscous, cover for 5 minutes, then stir in the drained chickpeas."],
+ ["Hard-boiled eggs, avocado and lamb's lettuce","Slice the eggs and avocado over the lamb's lettuce and squeeze over the lemon."],
+ ["Rice bowl with smoked salmon and edamame","Heat the rice for 2 minutes, then add the rest cold."],
+ ["Warm lentils with vegetables","Warm the lentils, then add the raw vegetables and the vinegar."],
+ ["Sardines on wholemeal bread","Mash the sardines onto the bread and squeeze over the lemon."],
+ ["Chilled-aisle salad with protein","Pick a salad without a creamy dressing and add a source of protein."],
+ ["Nuts, dried fruit and a fresh fruit","A small bag that slips into your pack for the train or plane."],
+ ["Quark, honey and hazelnuts","One individual tub is enough."],
+ ["Raw vegetables and hummus","Crunchy sticks to dip: no cutlery needed."],
+ ["Hard-boiled egg and fruit","Peeled hard-boiled eggs are sold in the chilled aisle."],
+ ["Apple and hard cheese","A hard cheese keeps for a few hours out of the fridge."],
+ ["Apple and peanut butter","An apple to bite into, with peanut butter in an individual pot if possible."]
+];
+var LD={
+ fr:{OUT:OUT,SWAPS:SWAPS,EQUIP:EQUIP,PRESETS:PRESETS,AVOID:AVOID,AVN:AVN,TYPES:TYPES,EQN:EQN,TYPN:TYPN},
+ en:{
+  OUT:[["Salads","healthy salad"],["Poke bowls","poke bowl"],["Vegetarian","vegetarian restaurant"],["Soups","soup"],["Grilled fish","grilled fish"],["Breakfast","healthy breakfast"],["Fresh juice","fresh juice"]],
+  SWAPS:[["Fries","steamed vegetables or salad"],["Sauce on the dish","sauce on the side"],["Fried or breaded","grilled, roasted or steamed"],["Soda","sparkling water or tea"],["Big portion of pasta","half portion and double vegetables"],["Pastry at the hotel","eggs, yogurt and fruit"]],
+  EQUIP:[["fridge","Fridge"],["micro","Microwave"],["kettle","Kettle"],["cutlery","Cutlery"]],
+  PRESETS:[["Basic hotel",["fridge","micro","kettle"]],["Room with a kettle",["fridge","micro"]],["Train or airport",["fridge","micro","kettle","cutlery"]],["Apartment with a kitchen",[]]],
+  AVOID:[["nuts","Tree nuts"],["peanut","Peanut"],["gluten","Gluten"],["dairy","Milk and lactose"],["egg","Egg"],["fish","Fish"],["sesame","Sesame"],["soy","Soy"]],
+  AVN:{nuts:"tree nuts",peanut:"peanut",gluten:"gluten",dairy:"milk",egg:"egg",fish:"fish",sesame:"sesame",soy:"soy"},
+  TYPES:[["all","All"],["b","Breakfast"],["m","Meal"],["s","Snack"]],
+  EQN:{fridge:"fridge",micro:"microwave",kettle:"kettle",cutlery:"cutlery"},
+  TYPN:{b:"Breakfast",m:"Meal",s:"Snack"}
+ }
+};
+var AISN={"Fruits et légumes":"Produce","Frais":"Chilled","Pain":"Bread","Épicerie":"Pantry","Conserves":"Canned goods"};
+var CLAB_EN={fr:"France",dk:"Denmark",de:"Germany",es:"Spain",it:"Italy",uk:"United Kingdom",us:"United States",be:"Belgium (French-speaking)",bn:"Belgium (Dutch-speaking)",lu:"Luxembourg",nl:"Netherlands",ch:"Switzerland (German-speaking)",cr:"Switzerland (French-speaking)",at:"Austria",pl:"Poland",se:"Sweden",pt:"Portugal",xx:"Other country (English names)"};
+var SD_EN={
+ "Salades du rayon frais, légumineuses en boîte, fruits en barquette.":"Chilled salads, canned pulses, fruit in trays.",
+ "Petits formats en centre-ville, houmous, œufs durs, yaourts.":"Small city-centre stores; hummus, hard-boiled eggs, yogurts.",
+ "Prix bas, noix et fruits secs, skyr, légumes prêts à manger.":"Low prices; nuts and dried fruit, skyr, ready-to-eat vegetables.",
+ "Rayon healthy, salades composées, jus pressés.":"Healthy aisle, prepared salads, pressed juices.",
+ "Vrac, flocons d'avoine, oléagineux, barres sans sucre ajouté.":"Bulk foods, rolled oats, nuts and seeds, no-added-sugar bars.",
+ "Petits prix, skyr, fruits, pain de seigle.":"Low prices; skyr, fruit, rye bread.",
+ "Grand choix, salades et plats frais à emporter.":"Wide choice; salads and fresh takeaway meals.",
+ "Légumes, produits laitiers, snacks riches en protéines.":"Vegetables, dairy, high-protein snacks.",
+ "Noix, flocons d'avoine, conserves de poisson.":"Nuts, rolled oats, canned fish.",
+ "Plats frais prêts à manger, produits bio.":"Fresh ready-to-eat meals, organic products.",
+ "Fruits secs, skyr, conserves, légumes à croquer.":"Dried fruit, skyr, canned goods, raw vegetables for snacking.",
+ "Petits prix, noix, flocons, légumineuses en boîte.":"Low prices; nuts, oats, canned pulses.",
+ "Salades fraîches, comptoir de plats préparés.":"Fresh salads, prepared-food counter.",
+ "Snacks secs, barres, flocons, fruits séchés.":"Dry snacks, bars, oats, dried fruit.",
+ "Produits bio, houmous, vrac.":"Organic products, hummus, bulk foods.",
+ "Salades, légumineuses cuites, fruits, conserves de poisson.":"Salads, cooked pulses, fruit, canned fish.",
+ "Rayon frais, houmous, œufs durs.":"Chilled aisle, hummus, hard-boiled eggs.",
+ "Noix, yaourts grecs, fruits secs.":"Nuts, Greek yogurts, dried fruit.",
+ "Petits prix, conserves, pain complet.":"Low prices; canned goods, wholemeal bread.",
+ "Légumes, légumineuses, fromages frais.":"Vegetables, pulses, fresh cheeses.",
+ "Salades prêtes, fruits, yaourts.":"Ready salads, fruit, yogurts.",
+ "Comptoir traiteur, salades composées.":"Deli counter, prepared salads.",
+ "Noix, fruits secs, conserves.":"Nuts, dried fruit, canned goods.",
+ "Rayon repas à emporter, fruits, houmous.":"Meal-deal aisle, fruit, hummus.",
+ "Salades, wraps, fruits coupés.":"Salads, wraps, cut fruit.",
+ "Plats frais prêts à manger, snacks de qualité.":"Fresh ready-to-eat meals, quality snacks.",
+ "Prix bas, noix, skyr.":"Low prices; nuts, skyr.",
+ "Snacks de noix, salades, houmous en petits formats.":"Nut snacks, salads, hummus in small sizes.",
+ "Bar à salades, plats chauds, produits bio.":"Salad bar, hot meals, organic products.",
+ "Fruits, conserves, yaourts grecs.":"Fruit, canned goods, Greek yogurts.",
+ "Salades, fruits, comptoir traiteur.":"Salads, fruit, deli counter.",
+ "Rayon frais, plats préparés, fruits et légumes.":"Chilled aisle, prepared meals, fruit and vegetables.",
+ "Grandes surfaces, légumineuses en boîte, produits de base.":"Large stores, canned pulses, staples.",
+ "Salades, houmous, œufs durs.":"Salads, hummus, hard-boiled eggs.",
+ "Noix, flocons d'avoine, conserves.":"Nuts, rolled oats, canned goods.",
+ "Skyr, fruits secs, légumes à croquer.":"Skyr, dried fruit, raw vegetables for snacking.",
+ "Salades, plats frais, fruits coupés.":"Salads, fresh meals, cut fruit.",
+ "Salades, houmous, produits laitiers.":"Salads, hummus, dairy.",
+ "Noix, skyr, conserves.":"Nuts, skyr, canned goods.",
+ "Petits prix, flocons, légumineuses.":"Low prices; oats, pulses.",
+ "Salades, plats frais, fruits coupés, houmous.":"Salads, fresh meals, cut fruit, hummus.",
+ "Grand choix, rayon frais, légumineuses en boîte.":"Wide choice, chilled aisle, canned pulses.",
+ "Skyr, noix, fruits secs.":"Skyr, nuts, dried fruit.",
+ "Petits prix, flocons, conserves.":"Low prices; oats, canned goods.",
+ "Fruits et légumes, produits frais.":"Fruit and vegetables, fresh produce.",
+ "Rayon frais, salades, plats préparés.":"Chilled aisle, salads, prepared meals.",
+ "Grand choix, produits bio, plats frais.":"Wide choice, organic products, fresh meals.",
+ "Petits prix, noix, flocons, conserves.":"Low prices; nuts, oats, canned goods.",
+ "Petits prix, légumineuses en boîte.":"Low prices; canned pulses.",
+ "Skyr, fruits secs, conserves.":"Skyr, dried fruit, canned goods.",
+ "Salades, plats frais, fruits et légumes.":"Salads, fresh meals, fruit and vegetables.",
+ "Rayon frais, plats préparés.":"Chilled aisle, prepared meals.",
+ "Petits prix, fruits, produits laitiers, conserves.":"Low prices; fruit, dairy, canned goods.",
+ "Petits magasins de proximité, snacks, salades.":"Small convenience stores, snacks, salads.",
+ "Noix, fruits secs, skyr.":"Nuts, dried fruit, skyr.",
+ "Petits prix, flocons, conserves, légumineuses.":"Low prices; oats, canned goods, pulses.",
+ "Salades, produits bio, plats frais.":"Salads, organic products, fresh meals.",
+ "Rayon frais, boulangerie.":"Chilled aisle, bakery.",
+ "Noix, skyr, fruits secs.":"Nuts, skyr, dried fruit.",
+ "Rayon frais, plats préparés, fruits.":"Chilled aisle, prepared meals, fruit.",
+ "Grand choix, légumineuses cuites, conserves de poisson.":"Wide choice, cooked pulses, canned fish.",
+ "Noix, yaourts, fruits secs.":"Nuts, yogurts, dried fruit.",
+ "Présent dans une grande partie de l'Europe.":"Found across much of Europe.",
+ "Présent en Europe, aux États-Unis et en Australie.":"Found in Europe, the United States and Australia.",
+ "Présent dans de nombreux pays.":"Found in many countries.",
+ "Cherchez les rayons fruits, conserves et produits frais.":"Look for the fruit, canned goods and chilled aisles."
+};
+var D={
+ desc:["Trouvez où manger sainement en voyage : magasins proches, noms des produits dans la langue locale, idées de repas selon l'équipement de la chambre.","Find where to eat healthily while travelling: nearby stores, product names in the local language, meal ideas based on your room's equipment."],
+ lead:["Où manger sainement quand on voyage, quoi acheter au supermarché du coin (avec les noms dans la langue locale), et quoi préparer quand la chambre d'hôtel n'a ni micro-ondes ni frigo.","Where to eat healthily when you travel, what to buy at the local supermarket (with names in the local language), and what to prepare when your hotel room has no microwave or fridge."],
+ where:["Où êtes-vous ?","Where are you?"],
+ country:["Pays","Country"],
+ city:["Ville ou quartier (facultatif)","City or area (optional)"],
+ ph_city:["ex. Copenhague, Vesterbro","e.g. Copenhagen, Vesterbro"],
+ where_sub:["Les enseignes sont les chaînes courantes du pays. Chaque lien ouvre Google Maps sur les adresses les plus proches, autour de la ville indiquée ou autour de vous.","The stores are the country's common chains. Each link opens Google Maps on the nearest locations, around the city you entered or around you."],
+ stores_h:["Supermarchés et magasins","Supermarkets and stores"],
+ out:["Manger dehors","Eating out"],
+ out_sub:["Une recherche par type de plat, pour trouver ce qui est proche et léger.","One search per type of dish, to find what is nearby and light."],
+ swaps_h:["Au restaurant, quelques échanges simples","At the restaurant: a few simple swaps"],
+ profile:["Votre profil","Your profile"],
+ presets:["Raccourcis selon votre hébergement","Shortcuts for your accommodation"],
+ nohave:["Il n'y a pas de","There is no"],
+ diet:["Régime","Diet"],
+ avoid:["Allergies et intolérances : à éviter absolument","Allergies and intolerances: avoid at all costs"],
+ avoidwarn:["Ces repères sont indicatifs et peuvent être faux pour un produit précis. Avec une vraie allergie, lisez toujours l'étiquette et demandez en magasin ou au restaurant. L'avoine, par exemple, peut contenir des traces de gluten.","These markers are indicative and may be wrong for a specific product. With a real allergy, always read the label and ask in the store or restaurant. Oats, for example, may contain traces of gluten."],
+ want:["Envies","Preferences"],
+ moment:["Moment","Time of day"],
+ meals_h:["Idées de repas","Meal ideas"],
+ list_h:["Liste de courses","Shopping list"],
+ list_sub:["Chaque produit est associé à l'enseigne du pays où il est le plus facile à trouver. Vous pouvez la changer si elle n'existe pas près de vous. Le nom local est à montrer en magasin.","Each product is matched with the store in the country where it is easiest to find. You can change it if it doesn't exist near you. Show the local name in the store."],
+ ap_sum:["Ajouter un prix vu en magasin","Add a price seen in a store"],
+ ap_sub:["Notez le prix lu sur l'étiquette en rayon. Il est enregistré sur cet appareil, avec sa date, et s'affiche dans la liste. Aucun prix n'est estimé : sans saisie, la liste indique « prix non renseigné ».","Note the price on the shelf label. It is saved on this device, with its date, and shown in the list. No price is estimated: without an entry, the list says “price not recorded”."],
+ ap_prod_l:["Produit","Product"],
+ ap_store_l:["Magasin","Store"],
+ ap_name_l:["Nom exact sur l'étiquette (facultatif)","Exact name on the label (optional)"],
+ ap_ref_l:["Référence ou code-barres (facultatif)","Reference or barcode (optional)"],
+ ap_scan:["Scanner le code-barres","Scan the barcode"],
+ ap_price_l:["Prix","Price"],
+ ph_price:["12,50","12.50"],
+ ap_cur_l:["Devise","Currency"],
+ ap_date_l:["Date","Date"],
+ ap_save:["Enregistrer ce prix","Save this price"],
+ ap_copy:["Copier le fichier prices.json","Copy the prices.json file"],
+ ask_h:["Une idée sur mesure","A custom idea"],
+ ask_sub:["Décrivez la situation et Claude propose trois idées qui tiennent compte de votre profil et des enseignes du pays.","Describe your situation and Claude suggests three ideas that take your profile and the country's stores into account."],
+ ask_l:["Votre situation","Your situation"],
+ ph_free:["ex. Nuit d'hôtel à Aarhus, arrivée à 21 h, magasin ouvert jusqu'à 22 h, pas de cuisine, je veux quelque chose de rassasiant.","e.g. One night in a hotel in Aarhus, arriving at 9 pm, store open until 10 pm, no kitchen, I want something filling."],
+ ask_btn:["Proposer des idées","Suggest ideas"],
+ foot:["Les idées de repas sont des suggestions générales, pas un avis diététique ni médical.","The meal ideas are general suggestions, not dietary or medical advice."],
+ scan_aria:["Scanner un code-barres","Scan a barcode"],
+ scan_photo:["Photographier le code-barres","Take a photo of the barcode"],
+ scan_close:["Fermer","Close"],
+ nearest_pl:["Voir les plus proches","See the nearest"],
+ nearest:["Voir le plus proche","See the nearest"],
+ phr_h:["À dire sur place","Useful phrases"],
+ no_x:["Pas de {x}","No {x}"],
+ veg:["Végétarien","Vegetarian"],
+ vegan:["Végan","Vegan"],
+ prot:["Riche en protéines","High in protein"],
+ cheap:["Petit budget","Low budget"],
+ count1:["1 idée correspond à votre profil.","1 idea matches your profile."],
+ countn:["{n} idées correspondent à votre profil.","{n} ideas match your profile."],
+ nomeal:["Aucune idée avec tout votre profil. Retirez une contrainte, ou demandez une idée sur mesure plus bas.","No idea fits your whole profile. Remove a constraint, or ask for a custom idea below."],
+ noequip:["aucun équipement","no equipment"],
+ chk:["à vérifier sur l'étiquette","check the label"],
+ contains:["Contient : {x}.","Contains: {x}."],
+ nocontains:["Aucun des allergènes courants listés.","None of the common allergens listed."],
+ addlist:["Ajouter à la liste","Add to list"],
+ empty_list:["Votre liste est vide. Ajoutez les ingrédients d'un repas avec le bouton de sa carte.","Your list is empty. Add a meal's ingredients with the button on its card."],
+ copy_list:["Copier la liste","Copy the list"],
+ copied:["Copié","Copied"],
+ clear:["Vider","Clear"],
+ price_btn:["Prix","Price"],
+ remove:["Retirer","Remove"],
+ aria_store:["Magasin pour {x}","Store for {x}"],
+ aria_price:["Noter un prix pour {x}","Record a price for {x}"],
+ aria_remove:["Retirer {x}","Remove {x}"],
+ price_for:["Prix de : {x}.","Price for: {x}."],
+ price_none:["Prix non renseigné","Price not recorded"],
+ at:["chez ","at "],
+ refabbr:["réf. ","ref. "],
+ seen:["vu le {d}","seen on {d}"],
+ seen_old:["vu le {d} (il y a {n} mois, à vérifier)","seen on {d} ({n} months ago, please check)"],
+ err_price:["Indiquez un prix valide, par exemple 12,50.","Enter a valid price, for example 12.50."],
+ err_cur:["Indiquez la devise, par exemple EUR.","Enter the currency, for example EUR."],
+ saved:["Prix enregistré sur cet appareil. Il apparaît dans la liste si le produit y figure.","Price saved on this device. It appears in the list if the product is on it."],
+ copied_file:["Fichier copié. Collez-le dans prices.json.","File copied. Paste it into prices.json."],
+ copy_fail:["La copie a échoué. Réessayez.","Copy failed. Please try again."],
+ code_read:["Code lu : {c}.","Code read: {c}."],
+ code_unknown:["Code lu : {c}. Produit inconnu d'Open Food Facts : tapez le nom si vous voulez.","Code read: {c}. Product not found in Open Food Facts: type the name if you like."],
+ scan_tip:["Placez le code-barres bien à plat, à 15-20 cm, avec de la lumière. Si rien ne se lit, touchez « Photographier le code-barres ».","Hold the barcode flat, 15-20 cm away, with good light. If nothing is read, tap “Take a photo of the barcode”."],
+ photo_reading:["Lecture de la photo…","Reading the photo…"],
+ photo_fail:["Code non reconnu sur la photo. Remplissez l'image avec le code-barres (15 à 20 cm), bien à plat et éclairé, puis réessayez.","Barcode not recognised in the photo. Fill the frame with the barcode (15-20 cm), flat and well lit, then try again."],
+ opening:["Ouverture de l'appareil photo…","Opening the camera…"],
+ denied:["L'accès à l'appareil photo est refusé. Autorisez-le dans les réglages du navigateur, puis réessayez.","Camera access was denied. Allow it in your browser settings, then try again."],
+ notfound:["Aucun appareil photo trouvé sur cet appareil.","No camera found on this device."],
+ cam_fail:["Impossible d'ouvrir l'appareil photo ou de charger le lecteur. Vérifiez le réseau, ou utilisez « Photographier le code-barres ».","Could not open the camera or load the reader. Check your network, or use “Take a photo of the barcode”."],
+ thinking:["Réflexion en cours…","Thinking…"],
+ rl:["Trop de demandes pour le moment. Réessayez dans un instant.","Too many requests right now. Please try again in a moment."],
+ notgranted:["L'autorisation a été refusée. Les idées ci-dessus restent disponibles.","Permission was denied. The ideas above are still available."],
+ askfail:["La demande n'a pas abouti. Réessayez dans un instant.","The request did not go through. Please try again in a moment."]
+};
+var lang="fr";
+function T(k,v){var e=D[k];var x=e?e[lang==="en"?1:0]:k;if(v)for(var q in v)x=x.split("{"+q+"}").join(v[q]);return x}
+function UI(){return lang==="en"?2:1}
+function nm(k){return ING[k][UI()]}
+function aisle(a){return lang==="en"?(AISN[a]||a):a}
+function clabel(k){return lang==="en"?CLAB_EN[k]:COUNTRIES[k].label}
+function sdesc(x){return lang==="en"&&SD_EN[x]?SD_EN[x]:x}
+function sname(n){return n==="Supermarché local"&&lang==="en"?"Local supermarket":n}
+function applyData(){var d=LD[lang];OUT=d.OUT;SWAPS=d.SWAPS;EQUIP=d.EQUIP;PRESETS=d.PRESETS;AVOID=d.AVOID;AVN=d.AVN;TYPES=d.TYPES;EQN=d.EQN;TYPN=d.TYPN}
+var S={country:"fr",city:"",excl:[],avoid:[],veg:false,vegan:false,prot:false,cheap:false,type:"all",list:[],assign:{},lang:null};
 var KEY="assiette-nomade-v2";
 var $=function(id){return document.getElementById(id)};
 function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);for(var k in S){if(o[k]!==undefined)S[k]=o[k]}}}catch(e){}}
@@ -483,7 +698,7 @@ function has(a,v){return a.indexOf(v)>-1}
 function toggle(a,v){var i=a.indexOf(v);if(i>-1)a.splice(i,1);else a.push(v)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function cty(){return COUNTRIES[S.country]||COUNTRIES.xx}
-function loc(key){var li=cty().li;return li===1?"":ING[key][li]}
+function loc(key){var li=cty().li;return li===UI()?"":ING[key][li]}
 function mapUrl(q){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q+(S.city?" "+S.city:" near me"))}
 function chip(label,on,fn,cls){var b=document.createElement("button");b.type="button";b.className="chip"+(cls?" "+cls:"");b.textContent=label;b.setAttribute("aria-pressed",on?"true":"false");b.addEventListener("click",function(){fn();save();renderAll()});return b}
 function fill(id,items){var el=$(id);el.textContent="";items.forEach(function(x){el.appendChild(x)})}
@@ -491,27 +706,28 @@ function sameSet(a,b){return a.length===b.length&&a.every(function(x){return has
 
 function renderWhere(){
   $("stores").innerHTML=cty().stores.map(function(s){
-    return '<div class="store"><h3>'+esc(s[0])+'</h3><p>'+esc(s[1])+'</p><a href="'+mapUrl(s[0])+'" target="_blank" rel="noopener">Voir les plus proches</a></div>'
+    return '<div class="store"><h3>'+esc(sname(s[0]))+'</h3><p>'+esc(sdesc(s[1]))+'</p><a href="'+mapUrl(s[0])+'" target="_blank" rel="noopener">'+esc(T("nearest_pl"))+'</a></div>'
   }).join("");
   $("outq").innerHTML=OUT.map(function(o){
     return '<a class="chip" style="text-decoration:none" href="'+mapUrl(o[1])+'" target="_blank" rel="noopener">'+esc(o[0])+'</a>'
   }).join("");
   $("swaps").innerHTML=SWAPS.map(function(s){return '<li><s>'+esc(s[0])+'</s><span>→</span><b>'+esc(s[1])+'</b></li>'}).join("");
   var li=cty().li,ph=PHRASES[li];
-  if(!ph){$("phrasebox").innerHTML="";return}
-  $("phrasebox").innerHTML='<h3 style="margin-bottom:8px">À dire sur place</h3><ul class="phrases">'+ph.map(function(p,i){return '<li><strong>'+esc(p)+'</strong><span>'+esc(FRP[i])+'</span></li>'}).join("")+'</ul>';
+  if(!ph||li===UI()){$("phrasebox").innerHTML="";return}
+  var mean=UI()===2?PHRASES[2]:PHRASES[1];
+  $("phrasebox").innerHTML='<h3 style="margin-bottom:8px">'+esc(T("phr_h"))+'</h3><ul class="phrases">'+ph.map(function(p,i){return '<li><strong>'+esc(p)+'</strong><span>'+esc(mean[i])+'</span></li>'}).join("")+'</ul>';
 }
 function renderChips(){
   fill("c-presets",PRESETS.map(function(p){return chip(p[0],sameSet(S.excl,p[1]),function(){S.excl=p[1].slice()},"preset")}));
-  fill("c-equip",EQUIP.map(function(e){return chip("Pas de "+e[1].toLowerCase(),has(S.excl,e[0]),function(){toggle(S.excl,e[0])})}));
+  fill("c-equip",EQUIP.map(function(e){return chip(T("no_x",{x:e[1].toLowerCase()}),has(S.excl,e[0]),function(){toggle(S.excl,e[0])})}));
   fill("c-diet",[
-    chip("Végétarien",S.veg||S.vegan,function(){if(S.vegan){S.vegan=false;S.veg=false}else S.veg=!S.veg}),
-    chip("Végan",S.vegan,function(){S.vegan=!S.vegan;if(S.vegan)S.veg=true})]);
+    chip(T("veg"),S.veg||S.vegan,function(){if(S.vegan){S.vegan=false;S.veg=false}else S.veg=!S.veg}),
+    chip(T("vegan"),S.vegan,function(){S.vegan=!S.vegan;if(S.vegan)S.veg=true})]);
   fill("c-avoid",AVOID.map(function(e){return chip(e[1],has(S.avoid,e[0]),function(){toggle(S.avoid,e[0])},"avoid")}));
   $("avoidwarn").hidden=!S.avoid.length;
   fill("c-want",[
-    chip("Riche en protéines",S.prot,function(){S.prot=!S.prot}),
-    chip("Petit budget",S.cheap,function(){S.cheap=!S.cheap})]);
+    chip(T("prot"),S.prot,function(){S.prot=!S.prot}),
+    chip(T("cheap"),S.cheap,function(){S.cheap=!S.cheap})]);
   fill("c-type",TYPES.map(function(e){return chip(e[1],S.type===e[0],function(){S.type=e[0]})}));
 }
 function matches(m){
@@ -524,25 +740,27 @@ function matches(m){
   if(S.cheap&&!m.c)return false;
   return true;
 }
+function mn(m){var i=MEALS.indexOf(m);return lang==="en"&&MEALS_EN[i]?MEALS_EN[i][0]:m.n}
+function mh(m){var i=MEALS.indexOf(m);return lang==="en"&&MEALS_EN[i]?MEALS_EN[i][1]:m.how}
 function buyHtml(keys){
   return '<ul class="buy">'+keys.map(function(k){
     var l=loc(k);
-    return '<li>'+esc(ING[k][1])+(l?' <small>→</small> <span class="loc">'+esc(l)+'</span>':'')+'</li>'
+    return '<li>'+esc(nm(k))+(l?' <small>→</small> <span class="loc">'+esc(l)+'</span>':'')+'</li>'
   }).join("")+'</ul>'
 }
 function renderMeals(){
   var list=MEALS.filter(matches);
-  $("count").textContent=list.length===0?"":(list.length===1?"1 idée correspond à votre profil.":list.length+" idées correspondent à votre profil.");
-  if(!list.length){$("meals").innerHTML='<div class="empty">Aucune idée avec tout votre profil. Retirez une contrainte, ou demandez une idée sur mesure plus bas.</div>';return}
+  $("count").textContent=list.length===0?"":(list.length===1?T("count1"):T("countn",{n:list.length}));
+  if(!list.length){$("meals").innerHTML='<div class="empty">'+esc(T("nomeal"))+'</div>';return}
   $("meals").innerHTML=list.map(function(m){
     var idx=MEALS.indexOf(m);
-    var tags='<span class="tag">'+TYPN[m.t]+'</span>';
-    tags+=m.need.length?m.need.map(function(n){return '<span class="tag warm">'+EQN[n]+'</span>'}).join(""):'<span class="tag">aucun équipement</span>';
-    if(m.chk)tags+='<span class="tag alert">à vérifier sur l\'étiquette</span>';
-    var contains=m.a.length?'Contient : '+m.a.map(function(x){return AVN[x]}).join(", ")+'.':'Aucun des allergènes courants listés.';
-    return '<article class="meal"><div class="tags">'+tags+'</div><h3>'+esc(m.n)+'</h3>'+
-      buyHtml(m.buy)+'<p class="how">'+esc(m.how)+'</p><p class="contains">'+esc(contains)+'</p>'+
-      '<button type="button" class="btn ghost" data-add="'+idx+'">Ajouter à la liste</button></article>'
+    var tags='<span class="tag">'+esc(TYPN[m.t])+'</span>';
+    tags+=m.need.length?m.need.map(function(n){return '<span class="tag warm">'+esc(EQN[n])+'</span>'}).join(""):'<span class="tag">'+esc(T("noequip"))+'</span>';
+    if(m.chk)tags+='<span class="tag alert">'+esc(T("chk"))+'</span>';
+    var contains=m.a.length?T("contains",{x:m.a.map(function(x){return AVN[x]}).join(", ")}):T("nocontains");
+    return '<article class="meal"><div class="tags">'+tags+'</div><h3>'+esc(mn(m))+'</h3>'+
+      buyHtml(m.buy)+'<p class="how">'+esc(mh(m))+'</p><p class="contains">'+esc(contains)+'</p>'+
+      '<button type="button" class="btn ghost" data-add="'+idx+'">'+esc(T("addlist"))+'</button></article>'
   }).join("");
 }
 function storeNames(){return cty().stores.map(function(x){return x[0]})}
@@ -563,8 +781,8 @@ function grouped(){
 function listText(){
   var out=[];
   grouped().forEach(function(g){
-    out.push(g[0].toUpperCase());
-    g[1].forEach(function(k){var l=loc(k);out.push("- "+ING[k][1]+(l?" ("+l+")":""))});
+    out.push(sname(g[0]).toUpperCase());
+    g[1].forEach(function(k){var l=loc(k);out.push("- "+nm(k)+(l?" ("+l+")":""))});
     out.push("");
   });
   return out.join("\n").trim();
@@ -587,18 +805,18 @@ function priceFor(k){
   return pool[0];
 }
 function ageText(d){
-  var t=Date.parse(d);if(isNaN(t))return "vu le "+d;
+  var t=Date.parse(d);if(isNaN(t))return T("seen",{d:d});
   var days=Math.max(0,Math.floor((Date.now()-t)/86400000));
-  if(days<=45)return "vu le "+d;
-  return "vu le "+d+" (il y a "+Math.round(days/30)+" mois, à vérifier)";
+  if(days<=45)return T("seen",{d:d});
+  return T("seen_old",{d:d,n:Math.round(days/30)});
 }
 function priceHtml(k){
   var p=priceFor(k);
-  if(!p)return '<small>Prix non renseigné</small>';
-  var bits=[p.price.toFixed(2).replace(".",",")+(p.currency?" "+p.currency:"")];
-  if(p.store!==storeFor(k))bits.push("chez "+p.store);
+  if(!p)return '<small>'+esc(T("price_none"))+'</small>';
+  var bits=[p.price.toFixed(2).replace(".",lang==="en"?".":",")+(p.currency?" "+p.currency:"")];
+  if(p.store!==storeFor(k))bits.push(T("at")+sname(p.store));
   if(p.product)bits.push(p.product);
-  if(p.ref)bits.push("réf. "+p.ref);
+  if(p.ref)bits.push(T("refabbr")+p.ref);
   bits.push(ageText(p.date));
   return '<small class="price">'+esc(bits.join(" · "))+'</small>';
 }
@@ -630,7 +848,7 @@ function scanStop(){
 }
 function onScanned(code){
   $("ap-ref").value=code;
-  var fb=$("ap-fb");fb.textContent="Code lu : "+code+".";
+  var fb=$("ap-fb");fb.textContent=T("code_read",{c:code});
   if(!navigator.onLine)return;
   var ctl=new AbortController(),tm=setTimeout(function(){ctl.abort()},6000);
   fetch("https://world.openfoodfacts.org/api/v2/product/"+encodeURIComponent(code)+"?fields=product_name,brands,quantity",{signal:ctl.signal})
@@ -638,10 +856,10 @@ function onScanned(code){
     .then(function(j){
       clearTimeout(tm);
       var p=j&&j.status===1&&j.product;
-      if(!p){fb.textContent="Code lu : "+code+". Produit inconnu d'Open Food Facts : tapez le nom si vous voulez.";return}
+      if(!p){fb.textContent=T("code_unknown",{c:code});return}
       var nm=[p.product_name,p.brands&&String(p.brands).split(",")[0],p.quantity].filter(Boolean).join(" · ");
       if(nm&&!$("ap-prod").value)$("ap-prod").value=nm;
-      fb.textContent="Code lu : "+code+(nm?" · "+nm:"")+".";
+      fb.textContent=T("code_read",{c:code+(nm?" · "+nm:"")});
     })
     .catch(function(){clearTimeout(tm)});
 }
@@ -651,7 +869,6 @@ function zxHints(){
   hints.set(Z.DecodeHintType.TRY_HARDER,true);
   return hints;
 }
-var SCAN_TIP="Placez le code-barres bien à plat, à 15-20 cm, avec de la lumière. Si rien ne se lit, touchez « Photographier le code-barres ».";
 function cropToUrl(img,fx){
   var W=img.naturalWidth,H=img.naturalHeight,cw=Math.round(W*fx),ch=Math.round(H*fx);
   var sx=Math.round((W-cw)/2),sy=Math.round((H-ch)/2),sc=Math.min(1,3200/Math.max(cw,ch));
@@ -670,7 +887,7 @@ function tryCrops(img,list){
 function scanFromPhoto(file){
   var msg=$("scan-msg");
   if(!file)return;
-  msg.textContent="Lecture de la photo…";
+  msg.textContent=T("photo_reading");
   loadZXing().then(function(){
     return new Promise(function(ok,ko){
       var url=URL.createObjectURL(file),img=new Image();
@@ -683,7 +900,7 @@ function scanFromPhoto(file){
   }).then(function(r){
     scanStop();onScanned(r.getText());
   }).catch(function(){
-    msg.textContent="Code non reconnu sur la photo. Remplissez l'image avec le code-barres (15 à 20 cm), bien à plat et éclairé, puis réessayez.";
+    msg.textContent=T("photo_fail");
   });
   $("scan-photo").value="";
 }
@@ -696,14 +913,14 @@ function readFrame(vid,fx,mr){
 }
 function scanOpen(){
   var msg=$("scan-msg"),vid=$("scan-video");
-  $("scan").hidden=false;msg.textContent="Ouverture de l'appareil photo…";
+  $("scan").hidden=false;msg.textContent=T("opening");
   loadZXing().then(function(){
     return navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false});
   }).then(function(stream){
     if($("scan").hidden){stream.getTracks().forEach(function(t){t.stop()});return}
     SC.stream=stream;vid.srcObject=stream;
     var started=vid.play();if(started&&started.catch)started.catch(function(){});
-    msg.textContent=SCAN_TIP;
+    msg.textContent=T("scan_tip");
     var Z=window.ZXing,mr=new Z.MultiFormatReader();mr.setHints(zxHints());
     var n=0;
     SC.timer=setInterval(function(){
@@ -718,7 +935,7 @@ function scanOpen(){
     },250);
   }).catch(function(e){
     var nm=e&&e.name;
-    msg.textContent=nm==="NotAllowedError"?"L'accès à l'appareil photo est refusé. Autorisez-le dans les réglages du navigateur, puis réessayez.":nm==="NotFoundError"?"Aucun appareil photo trouvé sur cet appareil.":"Impossible d'ouvrir l'appareil photo ou de charger le lecteur. Vérifiez le réseau, ou utilisez « Photographier le code-barres ».";
+    msg.textContent=nm==="NotAllowedError"?T("denied"):nm==="NotFoundError"?T("notfound"):T("cam_fail");
   });
 }
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("scan").hidden)scanStop()});
@@ -726,28 +943,26 @@ $("scan-photo").addEventListener("change",function(){scanFromPhoto(this.files&&t
 function renderPriceForm(){
   var si=$("ap-ing"),ss=$("ap-store");
   var vi=si.value,vs=ss.value;
-  if(!si.options.length){
-    si.innerHTML=Object.keys(ING).sort(function(a,b){return ING[a][1].localeCompare(ING[b][1],"fr")}).map(function(k){return '<option value="'+k+'">'+esc(ING[k][1])+'</option>'}).join("");
-  }
+  si.innerHTML=Object.keys(ING).sort(function(a,b){return nm(a).localeCompare(nm(b),lang)}).map(function(k){return '<option value="'+k+'">'+esc(nm(k))+'</option>'}).join("");
   if(vi)si.value=vi;
-  ss.innerHTML=storeNames().map(function(n){return '<option>'+esc(n)+'</option>'}).join("");
+  ss.innerHTML=storeNames().map(function(n){return '<option value="'+esc(n)+'">'+esc(sname(n))+'</option>'}).join("");
   if(vs&&storeNames().indexOf(vs)>-1)ss.value=vs;
 }
 function itemRow(k){
   var l=loc(k),cur=storeFor(k);
-  var opts=storeNames().map(function(n){return '<option'+(n===cur?' selected':'')+'>'+esc(n)+'</option>'}).join("");
-  var name=l?'<span class="loc">'+esc(l)+'</span><small>'+esc(ING[k][1])+' · '+esc(ING[k][0])+'</small>':esc(ING[k][1])+'<small>'+esc(ING[k][0])+'</small>';
-  return '<li><span>'+name+priceHtml(k)+'</span><span class="act"><select class="mini" data-asg="'+k+'" aria-label="Magasin pour '+esc(ING[k][1])+'">'+opts+'</select><button type="button" class="pricebtn" aria-label="Noter un prix pour '+esc(ING[k][1])+'" data-price="'+k+'">Prix</button><button type="button" aria-label="Retirer '+esc(ING[k][1])+'" data-rm="'+k+'">Retirer</button></span></li>';
+  var opts=storeNames().map(function(n){return '<option value="'+esc(n)+'"'+(n===cur?' selected':'')+'>'+esc(sname(n))+'</option>'}).join("");
+  var name=l?'<span class="loc">'+esc(l)+'</span><small>'+esc(nm(k))+' · '+esc(aisle(ING[k][0]))+'</small>':esc(nm(k))+'<small>'+esc(aisle(ING[k][0]))+'</small>';
+  return '<li><span>'+name+priceHtml(k)+'</span><span class="act"><select class="mini" data-asg="'+k+'" aria-label="'+esc(T("aria_store",{x:nm(k)}))+'">'+opts+'</select><button type="button" class="pricebtn" aria-label="'+esc(T("aria_price",{x:nm(k)}))+'" data-price="'+k+'">'+esc(T("price_btn"))+'</button><button type="button" aria-label="'+esc(T("aria_remove",{x:nm(k)}))+'" data-rm="'+k+'">'+esc(T("remove"))+'</button></span></li>';
 }
 function renderList(){
   var box=$("listbox");
   S.list=S.list.filter(function(k){return ING[k]});
-  if(!S.list.length){box.innerHTML='<div class="empty">Votre liste est vide. Ajoutez les ingrédients d\'un repas avec le bouton de sa carte.</div>';return}
+  if(!S.list.length){box.innerHTML='<div class="empty">'+esc(T("empty_list"))+'</div>';return}
   var html="";
   grouped().forEach(function(g){
-    html+='<div class="aisle"><div class="storehead"><h3>'+esc(g[0])+'</h3><a href="'+mapUrl(g[0])+'" target="_blank" rel="noopener">Voir le plus proche</a></div><ul class="list">'+g[1].map(itemRow).join("")+'</ul></div>';
+    html+='<div class="aisle"><div class="storehead"><h3>'+esc(sname(g[0]))+'</h3><a href="'+mapUrl(g[0])+'" target="_blank" rel="noopener">'+esc(T("nearest"))+'</a></div><ul class="list">'+g[1].map(itemRow).join("")+'</ul></div>';
   });
-  html+='<div class="row" style="margin-top:16px"><button type="button" class="btn" id="copy">Copier la liste</button><button type="button" class="btn ghost" id="clear">Vider</button></div><div id="fb"></div>';
+  html+='<div class="row" style="margin-top:16px"><button type="button" class="btn" id="copy">'+esc(T("copy_list"))+'</button><button type="button" class="btn ghost" id="clear">'+esc(T("clear"))+'</button></div><div id="fb"></div>';
   box.innerHTML=html;
 }
 function renderAll(){renderWhere();renderChips();renderMeals();renderList();renderPriceForm()}
@@ -755,7 +970,8 @@ function renderAll(){renderWhere();renderChips();renderMeals();renderList();rend
 document.addEventListener("click",function(e){
   var t=e.target;
   if(!t||!t.dataset)return;
-  if(t.dataset.add!==undefined){
+  if(t.dataset.lang!==undefined){setLang(t.dataset.lang)}
+  else if(t.dataset.add!==undefined){
     MEALS[+t.dataset.add].buy.forEach(function(k){if(!has(S.list,k))S.list.push(k)});
     save();renderList();
   }else if(t.dataset.price!==undefined){
@@ -764,7 +980,7 @@ document.addEventListener("click",function(e){
     $("ap-ing").value=pk;
     $("ap-store").value=storeFor(pk);
     $("ap-cur").value=$("ap-cur").value||CUR[S.country]||"";
-    $("ap-fb").textContent="Prix de : "+ING[pk][1]+(loc(pk)?" ("+loc(pk)+")":"")+".";
+    $("ap-fb").textContent=T("price_for",{x:nm(pk)+(loc(pk)?" ("+loc(pk)+")":"")});
     var det=$("addprice");det.open=true;
     det.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});
     $("ap-price").focus({preventScroll:true});
@@ -776,22 +992,22 @@ document.addEventListener("click",function(e){
   else if(t.id==="ap-save"){
     var fb=$("ap-fb"),pr=parseFloat(($("ap-price").value||"").replace(",","."));
     var cur=($("ap-cur").value||"").trim().toUpperCase();
-    if(!(pr>0&&pr<100000)){fb.textContent="Indiquez un prix valide, par exemple 12,50.";return}
-    if(!cur){fb.textContent="Indiquez la devise, par exemple EUR.";return}
+    if(!(pr>0&&pr<100000)){fb.textContent=T("err_price");return}
+    if(!cur){fb.textContent=T("err_cur");return}
     PR.local.push({ing:$("ap-ing").value,country:S.country,store:$("ap-store").value,product:$("ap-prod").value.trim(),ref:$("ap-ref").value.trim(),price:Math.round(pr*100)/100,currency:cur,date:$("ap-date").value||today(),source:"saisie personnelle"});
     saveLocalPrices();
     $("ap-price").value="";$("ap-prod").value="";$("ap-ref").value="";
-    fb.textContent="Prix enregistré sur cet appareil. Il apparaît dans la liste si le produit y figure.";
+    fb.textContent=T("saved");
     renderList();
   }
   else if(t.id==="ap-copy"){
     var txt2=exportPrices(),fb2=$("ap-fb");
-    try{navigator.clipboard.writeText(txt2).then(function(){fb2.textContent="Fichier copié. Collez-le dans prices.json."},function(){fb2.textContent="La copie a échoué. Réessayez."})}catch(err){fb2.textContent="La copie a échoué. Réessayez."}
+    try{navigator.clipboard.writeText(txt2).then(function(){fb2.textContent=T("copied_file")},function(){fb2.textContent=T("copy_fail")})}catch(err){fb2.textContent=T("copy_fail")}
   }
   else if(t.id==="copy"){
     var txt=listText();
     var fallback=function(){$("fb").innerHTML='<textarea readonly id="fbt" style="margin-top:10px;min-height:140px">'+esc(txt)+'</textarea>';var ta=$("fbt");ta.focus();ta.select()};
-    try{navigator.clipboard.writeText(txt).then(function(){t.textContent="Copié"},fallback)}catch(err){fallback()}
+    try{navigator.clipboard.writeText(txt).then(function(){t.textContent=T("copied")},fallback)}catch(err){fallback()}
   }
 });
 document.addEventListener("change",function(e){
@@ -799,15 +1015,34 @@ document.addEventListener("change",function(e){
   if(t&&t.dataset&&t.dataset.asg){S.assign[t.dataset.asg]=t.value;save();renderList()}
 });
 var cs=$("country");
-cs.innerHTML=Object.keys(COUNTRIES).map(function(k){return '<option value="'+k+'">'+COUNTRIES[k].label+'</option>'}).join("");
+function fillCountries(){
+  var v=cs.value;
+  cs.innerHTML=Object.keys(COUNTRIES).map(function(k){return '<option value="'+k+'">'+esc(clabel(k))+'</option>'}).join("");
+  cs.value=v&&COUNTRIES[v]?v:"fr";
+}
 cs.addEventListener("change",function(){S.country=cs.value;save();renderAll();$("ap-store").selectedIndex=0;$("ap-cur").value=CUR[S.country]||""});
 $("city").addEventListener("input",function(e){S.city=e.target.value.trim();save();renderWhere()});
+function applyLang(){
+  document.documentElement.lang=lang;
+  applyData();
+  document.querySelectorAll("[data-i18n]").forEach(function(el){el.textContent=T(el.getAttribute("data-i18n"))});
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){el.placeholder=T(el.getAttribute("data-i18n-ph"))});
+  document.querySelectorAll("[data-i18n-aria]").forEach(function(el){el.setAttribute("aria-label",T(el.getAttribute("data-i18n-aria")))});
+  var md=document.querySelector('meta[name="description"]');if(md)md.setAttribute("content",T("desc"));
+  document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.getAttribute("data-lang")===lang?"true":"false")});
+  fillCountries();
+  renderAll();
+}
+function setLang(l){if(l!=="fr"&&l!=="en")return;lang=l;S.lang=l;save();applyLang()}
 
 load();
-cs.value=COUNTRIES[S.country]?S.country:"fr";
+if(S.lang!=="fr"&&S.lang!=="en")S.lang=((navigator.language||"fr").toLowerCase().indexOf("fr")===0)?"fr":"en";
+lang=S.lang;
 $("city").value=S.city||"";
 loadLocalPrices();
-renderAll();
+cs.innerHTML='<option value="'+(COUNTRIES[S.country]?S.country:"fr")+'"></option>';
+cs.value=COUNTRIES[S.country]?S.country:"fr";
+applyLang();
 $("ap-cur").value=CUR[S.country]||"";
 $("ap-date").value=today();
 try{
@@ -829,8 +1064,19 @@ try{if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navig
     if(busy)return;
     var free=$("free").value.trim();
     var c=cty();
-    var diet=S.vegan?"végan":(S.veg?"végétarien":"aucun");
-    var lines=[
+    var en=lang==="en";
+    var diet=S.vegan?(en?"vegan":"végan"):(S.veg?(en?"vegetarian":"végétarien"):(en?"none":"aucun"));
+    var lines=(en?[
+      "You help a traveller eat healthily. Reply in English, concisely.",
+      "Country: "+clabel(S.country)+(S.city?", city: "+S.city:"")+".",
+      "Common stores: "+c.stores.map(function(s){return s[0]}).join(", ")+".",
+      "Missing from the room: "+(S.excl.length?S.excl.map(function(x){return EQN[x]}).join(", "):"nothing in particular")+".",
+      "Diet: "+diet+".",
+      "Allergies or intolerances to avoid at all costs: "+(S.avoid.length?S.avoid.map(function(x){return AVN[x]}).join(", "):"none")+".",
+      S.prot?"Prioritise protein.":"",S.cheap?"Low budget.":"",
+      "Situation: "+(free||"not specified")+".",
+      "Suggest exactly three meal ideas. For each: the name, what to buy with the name of each product in the country's language in brackets, the store where to find it, and how to put it together without using the missing equipment. Do not invent opening hours or prices. Remind the user in one sentence to check labels if there is an allergy."
+    ]:[
       "Tu aides une personne qui voyage à manger sainement. Réponds en français, de façon concise.",
       "Pays : "+c.label+(S.city?", ville : "+S.city:"")+".",
       "Enseignes courantes : "+c.stores.map(function(s){return s[0]}).join(", ")+".",
@@ -840,13 +1086,13 @@ try{if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navig
       S.prot?"Priorité aux protéines.":"",S.cheap?"Petit budget.":"",
       "Situation : "+(free||"non précisée")+".",
       "Propose exactement trois idées de repas. Pour chacune : le nom, ce qu'il faut acheter avec le nom de chaque produit dans la langue du pays entre parenthèses, l'enseigne où le trouver, et comment l'assembler sans utiliser l'équipement absent. N'invente ni horaires ni prix. Rappelle en une phrase de vérifier les étiquettes s'il y a une allergie."
-    ].filter(Boolean).join("\n");
-    var out=$("answer");out.hidden=false;out.textContent="Réflexion en cours…";
+    ]).filter(Boolean).join("\n");
+    var out=$("answer");out.hidden=false;out.textContent=T("thinking");
     busy=true;$("askbtn").disabled=true;
     try{
       await sample(lines,{cache:false,onText:function(r){out.textContent=r.text}});
     }catch(err){
-      out.textContent=(err&&err.code==="rate_limited")?"Trop de demandes pour le moment. Réessayez dans un instant.":(err&&err.code==="not_granted")?"L'autorisation a été refusée. Les idées ci-dessus restent disponibles.":"La demande n'a pas abouti. Réessayez dans un instant.";
+      out.textContent=(err&&err.code==="rate_limited")?T("rl"):(err&&err.code==="not_granted")?T("notgranted"):T("askfail");
     }
     busy=false;$("askbtn").disabled=false;
   });
